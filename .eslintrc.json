@@ -1,0 +1,38 @@
+{
+	"root": true,
+	"parser": "@typescript-eslint/parser",
+	"plugins": ["@typescript-eslint", "promise", "prettier"],
+	"extends": [
+		"eslint:recommended",
+		"plugin:@typescript-eslint/eslint-recommended",
+		"plugin:@typescript-eslint/recommended",
+		"plugin:promise/recommended",
+		"prettier"
+	],
+	"env": {
+		"jest": true
+	},
+	"rules": {
+		"@typescript-eslint/ban-ts-comment": "off",
+		"class-methods-use-this": "off",
+		"no-use-before-define": [
+			"error",
+			{
+				"functions": false,
+				"classes": true,
+				"variables": true
+			}
+		],
+		"@typescript-eslint/explicit-function-return-type": "off",
+		"@typescript-eslint/no-use-before-define": [
+			"error",
+			{
+				"functions": false,
+				"classes": true,
+				"variables": true,
+				"typedefs": true
+			}
+		],
+		"import/no-extraneous-dependencies": "off"
+	}
+}
