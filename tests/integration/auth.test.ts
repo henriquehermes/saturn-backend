@@ -20,11 +20,12 @@ setupTestDB();
 
 describe('Auth routes', () => {
   describe('POST /v1/auth/register', () => {
-    let newUser: { email: string; password: string };
+    let newUser: { email: string; password: string; name: string };
     beforeEach(() => {
       newUser = {
         email: faker.internet.email().toLowerCase(),
-        password: 'password1'
+        password: 'password1',
+        name: faker.internet.userName()
       };
     });
 
@@ -37,7 +38,7 @@ describe('Auth routes', () => {
       expect(res.body.user).not.toHaveProperty('password');
       expect(res.body.user).toEqual({
         id: expect.anything(),
-        name: null,
+        name: newUser.name,
         email: newUser.email,
         role: Role.USER,
         isEmailVerified: false
@@ -47,7 +48,7 @@ describe('Auth routes', () => {
       expect(dbUser).toBeDefined();
       expect(dbUser?.password).not.toBe(newUser.password);
       expect(dbUser).toMatchObject({
-        name: null,
+        name: newUser.name,
         email: newUser.email,
         role: Role.USER,
         isEmailVerified: false
