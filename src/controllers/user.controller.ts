@@ -12,8 +12,10 @@ const createUser = catchAsync(async (req, res) => {
 
 const getUsers = catchAsync(async (req, res) => {
   const filter = pick(req.query, ['name', 'role']);
-  const options = pick(req.query, ['sortBy', 'limit', 'page']);
-  const result = await userService.queryUsers(filter, options);
+  const options = pick(req.query, ['sortBy', 'limit', 'page', 'search', 'sortType']);
+  const searching = req.query['searchKey'] as string;
+  const searchFields = searching ? searching.split(',').map((field) => field.trim()) : [];
+  const result = await userService.queryUsers(filter, options, searchFields);
   res.send(result);
 });
 

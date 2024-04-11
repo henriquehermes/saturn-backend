@@ -44,7 +44,9 @@ const queryUsers = async <Key extends keyof User>(
     page?: number;
     sortBy?: string;
     sortType?: 'asc' | 'desc';
+    search?: string;
   },
+  searchableFields: string[],
   keys: Key[] = [
     'id',
     'email',
@@ -56,6 +58,21 @@ const queryUsers = async <Key extends keyof User>(
     'updatedAt'
   ] as Key[]
 ): Promise<Pick<User, Key>[]> => {
+  if (options.search) {
+    const searchWord = options.search.toLowerCase(); // Convert search word to lowercase for case-insensitive search
+    const searchFilter: { OR: { [key: string]: any }[] } = { OR: [] };
+
+    searchableFields.forEach((field) => {
+      const fieldFilter: { [key: string]: any } = {};
+      fieldFilter[field] = {
+        contains: searchWord,
+        mode: 'insensitive'
+      };
+      searchFilter.OR.push(fieldFilter);
+    });
+    // Combine the search filter with the existing filter
+    filter = { AND: [filter, searchFilter] };
+  }
   const page = options.page ?? 1;
   const limit = options.limit ?? 10;
   const sortBy = options.sortBy;
@@ -63,7 +80,7 @@ const queryUsers = async <Key extends keyof User>(
   const users = await prisma.user.findMany({
     where: filter,
     select: keys.reduce((obj, k) => ({ ...obj, [k]: true }), {}),
-    skip: page * limit,
+    skip: (page - 1) * limit,
     take: limit,
     orderBy: sortBy ? { [sortBy]: sortType } : undefined
   });
