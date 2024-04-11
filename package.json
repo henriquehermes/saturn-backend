@@ -2,11 +2,11 @@
   "name": "saturn-backend",
   "version": "1.0.0",
   "description": "REST API with Node JS, TypeScript, Express and Prisma",
-  "main": "src/index.ts",
+  "main": "api/index.ts",
   "repository": "",
   "scripts": {
     "start": "yarn build && pm2 start ecosystem.config.json --no-daemon",
-    "dev": "cross-env NODE_ENV=development nodemon src/index.ts",
+    "dev": "cross-env NODE_ENV=development nodemon api/index.ts",
     "test": "docker-compose -f docker-compose.only-db-test.yml up -d && yarn db:push && jest -i --colors --verbose --detectOpenHandles && docker-compose -f docker-compose.only-db-test.yml down",
     "test:watch": "docker-compose -f docker-compose.only-db-test.yml up -d && yarn db:push && jest -i --watchAll && docker-compose -f docker-compose.only-db-test.yml down",
     "lint": "eslint .",
