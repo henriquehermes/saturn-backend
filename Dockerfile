@@ -1,16 +1,15 @@
-FROM node:18-alpine as ts-environment
-WORKDIR /usr/app
+FROM node:alpine
 
-COPY package.json ./
-COPY package-lock.json ./
+RUN mkdir -p /usr/src/node-app && chown -R node:node /usr/src/node-app
 
-RUN npm install
+WORKDIR /usr/src/node-app
 
-COPY . ./
+COPY package.json yarn.lock ./
 
-RUN npm run build
+USER node
 
-ENV NODE_ENV=production
-EXPOSE 3000/tcp
+RUN yarn install --pure-lockfile
 
-CMD ["node", "dist/src/index.js"]
+COPY --chown=node:node . .
+
+EXPOSE 3000

@@ -1,19 +1,10 @@
-const config = {
-    preset: "ts-jest",
-    modulePathIgnorePatterns: ["<rootDir>/dist/"],
-    moduleFileExtensions: [
-        "js",
-        "ts",
-        "json"
-    ],
-    moduleDirectories: [
-        __dirname,
-        'src',
-        'node_modules'
-    ],
-    moduleNameMapper: {
-        '^src/(.*)$': '<rootDir>/src/$1',
-    }
-}
-
-export default config
+module.exports = {
+  preset: 'ts-jest',
+  testEnvironment: 'node',
+  testEnvironmentOptions: {
+    NODE_ENV: 'test'
+  },
+  restoreMocks: true,
+  coveragePathIgnorePatterns: ['node_modules', 'src/config', 'src/app.ts', 'tests'],
+  coverageReporters: ['text', 'lcov', 'clover', 'html']
+};
