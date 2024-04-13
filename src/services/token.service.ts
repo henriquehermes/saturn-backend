@@ -68,8 +68,27 @@ const saveToken = async (
 const verifyToken = async (token: string, type: TokenType): Promise<Token> => {
   const payload = jwt.verify(token, config.jwt.secret);
   const userId = Number(payload.sub);
+
   const tokenData = await prisma.token.findFirst({
     where: { token, type, userId, blacklisted: false }
+  });
+  if (!tokenData) {
+    throw new Error('Token not found');
+  }
+  return tokenData;
+};
+
+/**
+ * Verify access token and return token doc (or throw an error if it is not valid)
+ * @param {string} token
+ * @returns {Promise<Token>}
+ */
+const verifyAccessToken = async (token: string): Promise<Token> => {
+  const payload = jwt.verify(token, config.jwt.secret);
+  const userId = Number(payload.sub);
+
+  const tokenData = await prisma.token.findFirst({
+    where: { userId, blacklisted: false }
   });
   if (!tokenData) {
     throw new Error('Token not found');
@@ -134,6 +153,7 @@ export default {
   generateToken,
   saveToken,
   verifyToken,
+  verifyAccessToken,
   generateAuthTokens,
   generateResetPasswordToken,
   generateVerifyEmailToken

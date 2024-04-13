@@ -2,7 +2,8 @@ import httpStatus from 'http-status';
 import pick from '../utils/pick';
 import ApiError from '../utils/ApiError';
 import catchAsync from '../utils/catchAsync';
-import { userService } from '../services';
+import { tokenService, userService } from '../services';
+import exclude from '../utils/exclude';
 
 const createUser = catchAsync(async (req, res) => {
   const { email, password, name, role } = req.body;
@@ -37,10 +38,31 @@ const deleteUser = catchAsync(async (req, res) => {
   res.status(httpStatus.NO_CONTENT).send();
 });
 
+const getUserSession = catchAsync(async (req, res) => {
+  let bearerToken = req.headers.authorization ?? '';
+
+  if (bearerToken) {
+    bearerToken = bearerToken.split(' ')[1];
+  }
+  const accessToken = await tokenService.verifyAccessToken(bearerToken);
+  const { userId } = accessToken;
+
+  const user = await userService.getUserById(userId);
+
+  if (!user) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
+  }
+
+  const userWithoutPassword = exclude(user, ['password']);
+
+  res.send(userWithoutPassword);
+});
+
 export default {
   createUser,
   getUsers,
   getUser,
   updateUser,
-  deleteUser
+  deleteUser,
+  getUserSession
 };

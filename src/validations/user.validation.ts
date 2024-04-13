@@ -48,10 +48,19 @@ const deleteUser = {
   })
 };
 
+const getSession = {
+  headers: Joi.object({
+    authorization: Joi.string()
+      .required()
+      .regex(/^Bearer\s.+/)
+  })
+};
+
 export default {
   createUser,
   getUsers,
   getUser,
   updateUser,
-  deleteUser
+  deleteUser,
+  getSession
 };

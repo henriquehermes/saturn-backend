@@ -55,7 +55,8 @@ const queryUsers = async <Key extends keyof User>(
     'role',
     'isEmailVerified',
     'createdAt',
-    'updatedAt'
+    'updatedAt',
+    'Token'
   ] as Key[]
 ): Promise<Pick<User, Key>[]> => {
   if (options.search) {
