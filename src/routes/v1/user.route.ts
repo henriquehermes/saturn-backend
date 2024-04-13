@@ -6,7 +6,11 @@ import { userValidation } from '../../validations';
 
 const router = express.Router();
 
-router.route('/').get(auth(), validate(userValidation.getSession), userController.getUserSession);
+router
+  .route('/')
+  .get(auth(), validate(userValidation.getSession), userController.getUserSession)
+  .patch(auth(), validate(userValidation.getSession), userController.updateUser)
+  .delete(auth(), validate(userValidation.getSession), userController.deleteUser);
 
 export default router;
 

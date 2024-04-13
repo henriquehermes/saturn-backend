@@ -560,6 +560,7 @@ describe('Auth routes', () => {
         expires,
         TokenType.VERIFY_EMAIL
       );
+
       await tokenService.saveToken(verifyEmailToken, dbUserOne.id, expires, TokenType.VERIFY_EMAIL);
 
       await request(app)
@@ -763,7 +764,7 @@ describe('Auth middleware', () => {
 
   test('should call next with unauthorized error if user is not found', async () => {
     const userOneAccessToken = tokenService.generateToken(
-      2000,
+      'e8e77b09-0e89-4cfa-aad1-a53ddca2957f',
       moment().add(config.jwt.accessExpirationMinutes, 'minutes'),
       TokenType.ACCESS
     );
