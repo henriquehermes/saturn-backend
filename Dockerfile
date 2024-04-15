@@ -2,13 +2,15 @@ FROM node:lts
 
 # RUN mkdir -p /usr/src/node-app && chown -R node:node /usr/src/node-app
 
-WORKDIR /node-app
+WORKDIR /usr/src/app
 
-COPY package.json package-lock.json ./
+COPY package*.json ./
 
 # USER node
 
 RUN npm install
+
+RUN npm ci --only=production
 
 COPY . .
 

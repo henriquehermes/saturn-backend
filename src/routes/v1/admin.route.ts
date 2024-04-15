@@ -1,21 +1,21 @@
 import express from 'express';
 import auth from '../../middlewares/auth';
 import validate from '../../middlewares/validate';
-import { userValidation } from '../../validations';
+import { adminValidation } from '../../validations';
 import { adminController } from '../../controllers';
 
 const router = express.Router();
 
 router
   .route('/')
-  .post(auth('manageUsers'), validate(userValidation.createUser), adminController.createUser)
-  .get(validate(userValidation.getUsers), adminController.getUsers);
+  .post(auth('manageUsers'), validate(adminValidation.createUser), adminController.createUser)
+  .get(validate(adminValidation.getUsers), adminController.getUsers);
 
 router
   .route('/:userId')
-  .get(auth('getUsers'), validate(userValidation.getUser), adminController.getUser)
-  .patch(auth('manageUsers'), validate(userValidation.updateUser), adminController.updateUser)
-  .delete(auth('manageUsers'), validate(userValidation.deleteUser), adminController.deleteUser);
+  .get(auth('getUsers'), validate(adminValidation.getUser), adminController.getUser)
+  .patch(auth('manageUsers'), validate(adminValidation.updateUser), adminController.updateUser)
+  .delete(auth('manageUsers'), validate(adminValidation.deleteUser), adminController.deleteUser);
 
 export default router;
 

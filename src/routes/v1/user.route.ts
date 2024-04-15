@@ -8,18 +8,13 @@ const router = express.Router();
 
 router
   .route('/')
-  .get(auth(), validate(userValidation.getSession), userController.getUserSession)
-  .patch(auth(), validate(userValidation.getSession), userController.updateUser)
-  .delete(auth(), validate(userValidation.getSession), userController.deleteUser);
+  .get(auth(), userController.getUserSession)
+  .patch(auth(), validate(userValidation.updateUser), userController.updateUser)
+  .delete(auth(), userController.deleteUser);
 
 router
   .route('/github')
-  .post(
-    auth(),
-    validate(userValidation.getSession),
-    validate(userValidation.githubLink),
-    userController.linkGitHub
-  );
+  .patch(auth(), validate(userValidation.githubLink), userController.linkGitHub);
 
 export default router;
 
@@ -54,17 +49,10 @@ export default router;
  *
  *   patch:
  *     summary: Update a user
- *     description: Logged in users can only update their own information. Only admins can update other users.
+ *     description: Logged in users can only update their own information.
  *     tags: [User]
  *     security:
  *       - bearerAuth: []
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: string
- *         description: User id
  *     requestBody:
  *       required: true
  *       content:
@@ -105,17 +93,39 @@ export default router;
  *
  *   delete:
  *     summary: Delete a user
- *     description: Logged in users can delete only themselves. Only admins can delete other users.
+ *     description: Logged in users can delete only themselves.
  *     tags: [User]
  *     security:
  *       - bearerAuth: []
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: string
- *         description: User id
+ *     responses:
+ *       "200":
+ *         description: No content
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
+ *       "404":
+ *         $ref: '#/components/responses/NotFound'
+ *
+ * /github:
+ *   patch:
+ *     summary: Update GitHub link
+ *     description: User can link your github account.
+ *     tags: [User]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               github:
+ *                 type: string
+ *                 description: github repository
+ *             example:
+ *               github: https://api.github.com/users/henriquehermes
  *     responses:
  *       "200":
  *         description: No content
