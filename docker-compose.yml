@@ -9,7 +9,7 @@ services:
     depends_on:
       - postgresdb
     volumes:
-      - .:/usr/src/node-app
+      - .:/app
     networks:
       - node-network
 
