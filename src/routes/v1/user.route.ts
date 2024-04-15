@@ -12,6 +12,15 @@ router
   .patch(auth(), validate(userValidation.getSession), userController.updateUser)
   .delete(auth(), validate(userValidation.getSession), userController.deleteUser);
 
+router
+  .route('/github')
+  .post(
+    auth(),
+    validate(userValidation.getSession),
+    validate(userValidation.githubLink),
+    userController.linkGitHub
+  );
+
 export default router;
 
 /**

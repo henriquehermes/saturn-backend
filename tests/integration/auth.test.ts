@@ -41,7 +41,8 @@ describe('Auth routes', () => {
         name: newUser.name,
         email: newUser.email,
         role: Role.USER,
-        isEmailVerified: false
+        isEmailVerified: false,
+        github: null
       });
 
       const dbUser = await prisma.user.findUnique({ where: { id: res.body.user.id } });

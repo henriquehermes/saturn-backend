@@ -56,7 +56,8 @@ const queryUsers = async <Key extends keyof User>(
     'isEmailVerified',
     'createdAt',
     'updatedAt',
-    'Token'
+    'Token',
+    'github'
   ] as Key[]
 ): Promise<Pick<User, Key>[]> => {
   if (options.search) {
@@ -104,7 +105,8 @@ const getUserById = async <Key extends keyof User>(
     'role',
     'isEmailVerified',
     'createdAt',
-    'updatedAt'
+    'updatedAt',
+    'github'
   ] as Key[]
 ): Promise<Pick<User, Key> | null> => {
   return prisma.user.findUnique({
@@ -129,7 +131,8 @@ const getUserByEmail = async <Key extends keyof User>(
     'role',
     'isEmailVerified',
     'createdAt',
-    'updatedAt'
+    'updatedAt',
+    'github'
   ] as Key[]
 ): Promise<Pick<User, Key> | null> => {
   return prisma.user.findUnique({
@@ -178,11 +181,27 @@ const deleteUserById = async (userId: string): Promise<User> => {
   return user;
 };
 
+/**
+ * Link github user
+ * @param {ObjectId} userId
+ * @param {string} github
+ * @returns {Promise<User>}
+ */
+const linkGitHub = async (userId: string, github: string): Promise<User> => {
+  return await prisma.user.update({
+    where: { id: userId },
+    data: {
+      github
+    }
+  });
+};
+
 export default {
   createUser,
   queryUsers,
   getUserById,
   getUserByEmail,
   updateUserById,
-  deleteUserById
+  deleteUserById,
+  linkGitHub
 };

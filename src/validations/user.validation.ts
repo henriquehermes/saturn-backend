@@ -56,11 +56,18 @@ const getSession = {
   })
 };
 
+const githubLink = {
+  body: Joi.object().keys({
+    github: Joi.string().required()
+  })
+};
+
 export default {
   createUser,
   getUsers,
   getUser,
   updateUser,
   deleteUser,
-  getSession
+  getSession,
+  githubLink
 };

@@ -8,7 +8,7 @@ COPY package.json package-lock.json ./
 
 USER node
 
-RUN yarn install --pure-lockfile
+RUN npm install --pure-lockfile
 
 COPY --chown=node:node . .
 
