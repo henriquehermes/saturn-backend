@@ -20,4 +20,5 @@ db
 # TypeScript
 build
 
-uploads
+uploads/*
+!uploads/.gitkeep
