@@ -13,7 +13,9 @@ const updateUser = {
 
 const githubLink = {
   body: Joi.object().keys({
-    github: Joi.string().required()
+    github: Joi.string()
+      .regex(/^https:\/\/api\.github\.com\/users\/.+/)
+      .allow(null)
   })
 };
 
