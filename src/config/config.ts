@@ -25,7 +25,18 @@ const envVarsSchema = Joi.object()
     SMTP_PORT: Joi.number().description('port to connect to the email server'),
     SMTP_USERNAME: Joi.string().description('username for email server'),
     SMTP_PASSWORD: Joi.string().description('password for email server'),
-    EMAIL_FROM: Joi.string().description('the from field in the emails sent by the app')
+    EMAIL_FROM: Joi.string().description('the from field in the emails sent by the app'),
+    CLOUDFLARE_TOKEN: Joi.string().description('API token for Cloudflare authentication'),
+    CLOUDFLARE_ACCESS_KEY_ID: Joi.string().description(
+      'Access key ID for Cloudflare authentication'
+    ),
+    CLOUDFLARE_SECRET_ACCESS_KEY: Joi.string().description(
+      'Secret access key for Cloudflare authentication'
+    ),
+    CLOUDFLARE_BUCKET_NAME: Joi.string().description(
+      'Name of the bucket used in Cloudflare integration'
+    ),
+    CLOUDFLARE_ACCOUNT_ID: Joi.string().description('Account ID associated with Cloudflare')
   })
   .unknown();
 
@@ -57,5 +68,12 @@ export default {
       }
     },
     from: envVars.EMAIL_FROM
+  },
+  cloudflare: {
+    token: envVars.CLOUDFLARE_TOKEN,
+    accessKey: envVars.CLOUDFLARE_ACCESS_KEY_ID,
+    bucket: envVars.CLOUDFLARE_BUCKET_NAME,
+    secretKey: envVars.CLOUDFLARE_SECRET_ACCESS_KEY,
+    accountId: envVars.CLOUDFLARE_ACCOUNT_ID
   }
 };

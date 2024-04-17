@@ -2,6 +2,7 @@ import express from 'express';
 import authRoute from './auth.route';
 import adminRoute from './admin.route';
 import userRoute from './user.route';
+import uploadRoute from './upload.route';
 import docsRoute from './docs.route';
 import config from '../../config/config';
 
@@ -19,6 +20,10 @@ const defaultRoutes = [
   {
     path: '/user',
     route: userRoute
+  },
+  {
+    path: '/upload',
+    route: uploadRoute
   }
 ];
 

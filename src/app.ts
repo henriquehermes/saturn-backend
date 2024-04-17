@@ -32,6 +32,9 @@ app.use(express.urlencoded({ extended: true }));
 // sanitize request data
 app.use(xss());
 
+// upload folder to preview files
+app.use('/uploads', express.static('uploads'));
+
 // gzip compression
 app.use(compression());
 
