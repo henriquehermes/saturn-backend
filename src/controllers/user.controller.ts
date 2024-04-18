@@ -36,7 +36,9 @@ const linkGitHub = catchAsync(async (req, res) => {
   const user = req.user as User;
 
   await userService.linkGitHub(user.id, req.body.github);
-  res.status(httpStatus.NO_CONTENT).send();
+  res.status(httpStatus.OK).send({
+    github: req.body.github
+  });
 });
 
 export default {

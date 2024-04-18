@@ -5,6 +5,8 @@ import userRoute from './user.route';
 import uploadRoute from './upload.route';
 import aiRoute from './ai.route';
 import docsRoute from './docs.route';
+import projectRoute from './project.route';
+
 import config from '../../config/config';
 
 const router = express.Router();
@@ -29,6 +31,10 @@ const defaultRoutes = [
   {
     path: '/ai',
     route: aiRoute
+  },
+  {
+    path: '/project',
+    route: projectRoute
   }
 ];
 

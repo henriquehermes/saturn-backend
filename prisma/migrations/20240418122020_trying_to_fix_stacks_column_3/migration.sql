@@ -1,0 +1,4 @@
+-- AlterTable
+ALTER TABLE "Project" ALTER COLUMN "design_url" DROP NOT NULL,
+ALTER COLUMN "flow_diagram" DROP NOT NULL,
+ALTER COLUMN "logo" DROP NOT NULL;

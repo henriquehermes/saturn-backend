@@ -38,15 +38,15 @@ model Token {
 
 model Project {
   id            String         @id @default(uuid())
-  name          String
+  name          String         @unique
   description   String
-  status        String
-  design_url    String
-  flow_diagram  String
-  logo          String
+  status        Status
+  design_url    String?
+  flow_diagram  String?
+  logo          String?
   user          User           @relation(fields: [creatorId], references: [id])
   creatorId     String
-  stacks        Stack[]
+  stack         Stack?         @relation(name: "ProjectToStack")
   collaborators Collaborator[]
   brainstorms   BrainStorm[]
   tasks         Task[]
@@ -60,8 +60,8 @@ model Stack {
   frontend  String[]
   backend   String[]
   misc      String[]
-  project   Project  @relation(fields: [projectId], references: [id])
-  projectId String
+  project   Project? @relation(name: "ProjectToStack", fields: [projectId], references: [id])
+  projectId String?  @unique
 }
 
 model BrainStorm {
@@ -111,4 +111,12 @@ enum TokenType {
   REFRESH
   RESET_PASSWORD
   VERIFY_EMAIL
+}
+
+enum Status {
+  DRAFT
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+  INACTIVE
 }
