@@ -85,5 +85,6 @@ export default {
     region: envVars.AWS_REGION,
     accessKeyId: envVars.AWS_ACCESS_KEY,
     secretAccessKey: envVars.AWS_SECRET_ACCESS_KEY
-  }
+  },
+  openAiKey: envVars.OPEN_AI_KEY
 };

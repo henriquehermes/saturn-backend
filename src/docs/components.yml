@@ -58,6 +58,17 @@ components:
       example:
         url: http://www.com
 
+    AI:
+      type: object
+      properties:
+        url:
+          type: string
+        role:
+          type: string
+          enum: [USER, ADMIN]
+      example:
+        message: Lorem Ipsum
+
   responses:
     DuplicateEmail:
       description: Email already taken

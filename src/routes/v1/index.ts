@@ -3,6 +3,7 @@ import authRoute from './auth.route';
 import adminRoute from './admin.route';
 import userRoute from './user.route';
 import uploadRoute from './upload.route';
+import aiRoute from './ai.route';
 import docsRoute from './docs.route';
 import config from '../../config/config';
 
@@ -24,6 +25,10 @@ const defaultRoutes = [
   {
     path: '/upload',
     route: uploadRoute
+  },
+  {
+    path: '/ai',
+    route: aiRoute
   }
 ];
 
