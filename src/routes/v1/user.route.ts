@@ -8,7 +8,7 @@ const router = express.Router();
 
 router
   .route('/')
-  .get(auth(), userController.getUserSession)
+  .get(auth(), userController.getUser)
   .patch(auth(), validate(userValidation.updateUser), userController.updateUser)
   .delete(auth(), userController.deleteUser);
 
@@ -107,7 +107,7 @@ export default router;
  *       "404":
  *         $ref: '#/components/responses/NotFound'
  *
- * /github:
+ * /user/github:
  *   patch:
  *     summary: Update GitHub link
  *     description: User can link your github account.

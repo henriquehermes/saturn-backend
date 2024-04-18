@@ -36,7 +36,11 @@ const envVarsSchema = Joi.object()
     CLOUDFLARE_BUCKET_NAME: Joi.string().description(
       'Name of the bucket used in Cloudflare integration'
     ),
-    CLOUDFLARE_ACCOUNT_ID: Joi.string().description('Account ID associated with Cloudflare')
+    CLOUDFLARE_ACCOUNT_ID: Joi.string().description('Account ID associated with Cloudflare'),
+    AWS_REGION: Joi.string().description('Region from S3 bucket'),
+    AWS_ACCESS_KEY: Joi.string().description('Access key ID for S3 authentication'),
+    AWS_BUCKET_NAME: Joi.string().description('Name of the bucket used in S3 integration'),
+    AWS_SECRET_ACCESS_KEY: Joi.string().description('Secret Access key ID for S3 authentication')
   })
   .unknown();
 
@@ -75,5 +79,11 @@ export default {
     bucket: envVars.CLOUDFLARE_BUCKET_NAME,
     secretKey: envVars.CLOUDFLARE_SECRET_ACCESS_KEY,
     accountId: envVars.CLOUDFLARE_ACCOUNT_ID
+  },
+  aws: {
+    bucket: envVars.AWS_BUCKET_NAME,
+    region: envVars.AWS_REGION,
+    accessKeyId: envVars.AWS_ACCESS_KEY,
+    secretAccessKey: envVars.AWS_SECRET_ACCESS_KEY
   }
 };

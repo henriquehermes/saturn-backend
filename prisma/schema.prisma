@@ -11,16 +11,18 @@ datasource db {
 }
 
 model User {
-  id              String   @id @default(uuid())
-  email           String   @unique
+  id              String         @id @default(uuid())
+  email           String         @unique
   name            String?
   password        String
-  role            Role     @default(USER)
-  isEmailVerified Boolean  @default(false)
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  role            Role           @default(USER)
+  isEmailVerified Boolean        @default(false)
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
   Token           Token[]
   github          String?
+  Project         Project[]
+  Collaborator    Collaborator[]
 }
 
 model Token {
@@ -32,6 +34,70 @@ model Token {
   createdAt   DateTime  @default(now())
   user        User      @relation(fields: [userId], references: [id])
   userId      String
+}
+
+model Project {
+  id            String         @id @default(uuid())
+  name          String
+  description   String
+  status        String
+  design_url    String
+  flow_diagram  String
+  logo          String
+  user          User           @relation(fields: [userId], references: [id])
+  userId        String
+  stacks        Stack[]
+  collaborators Collaborator[]
+  brainstorms   BrainStorm[]
+  tasks         Task[]
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  timeline      Timeline[]
+}
+
+model Stack {
+  id        String   @id @default(uuid())
+  frontend  String[]
+  backend   String[]
+  misc      String[]
+  project   Project  @relation(fields: [projectId], references: [id])
+  projectId String
+}
+
+model BrainStorm {
+  id        String   @id @default(uuid())
+  text      String
+  project   Project  @relation(fields: [projectId], references: [id])
+  projectId String
+  createdAt DateTime @default(now())
+}
+
+model Collaborator {
+  id        String  @id @default(uuid())
+  user      User    @relation(fields: [userId], references: [id])
+  userId    String
+  project   Project @relation(fields: [projectId], references: [id])
+  projectId String
+}
+
+model Task {
+  id                 String   @id @default(uuid())
+  name               String
+  progressPercentage Int
+  project            Project  @relation(fields: [projectId], references: [id])
+  projectId          String
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+}
+
+model Timeline {
+  id          String   @id @default(uuid())
+  name        String
+  description String
+  project     Project  @relation(fields: [projectId], references: [id])
+  projectId   String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
 
 enum Role {
