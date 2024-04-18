@@ -1,11 +1,12 @@
 import httpStatus from 'http-status';
 import catchAsync from '../utils/catchAsync';
 import { r2, s3 } from '../lib/cloud-bucket';
-import { GetObjectCommand, PutObjectCommand } from '@aws-sdk/client-s3';
+import { DeleteObjectCommand, GetObjectCommand, PutObjectCommand } from '@aws-sdk/client-s3';
 import config from '../config/config';
 import multer from 'multer';
 import { randomUUID } from 'crypto';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
+import { Upload } from '@aws-sdk/lib-storage';
 
 const multerConfigBucket = multer({
   storage: multer.memoryStorage(),
@@ -86,8 +87,13 @@ const uploadToS3 = catchAsync(async (req, res) => {
     ContentType: req.file?.mimetype
   };
 
+  const upload = new Upload({
+    client: s3,
+    params
+  });
+
   try {
-    const response = await s3.upload(params).promise();
+    const response = await upload.done();
     return res.status(httpStatus.CREATED).send({
       url: response.Location
     });
@@ -97,10 +103,12 @@ const uploadToS3 = catchAsync(async (req, res) => {
 });
 
 const deleteFromS3 = catchAsync(async (req, res) => {
-  const params = { Bucket: config.aws.bucket, Key: req.body.key };
+  const params = { Bucket: config.aws.bucket, Key: req.query['key'] as string };
 
   try {
-    await s3.deleteObject(params).promise();
+    const deleteCommand = new DeleteObjectCommand(params);
+    await s3.send(deleteCommand);
+
     return res.status(httpStatus.OK).send();
   } catch (error) {
     return res.status(500).send('Error deleting file from S3');

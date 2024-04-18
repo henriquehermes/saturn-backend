@@ -26,12 +26,13 @@ export default router;
  *   name: Upload
  *   description: Upload management and retrieval
  */
+
 /**
  * @swagger
  * /upload:
  *   post:
  *     summary: Upload a file to S3
- *     description: Upload files to S3 Bucket.
+ *     description: Upload files to Amazon S3 Bucket.
  *     tags: [Upload]
  *     security:
  *       - bearerAuth: []
@@ -58,23 +59,19 @@ export default router;
  *         $ref: '#/components/responses/Forbidden'
  *       "404":
  *         $ref: '#/components/responses/NotFound'
+ *
  *   delete:
- *     summary: Delete a file from S3 Bucket
- *     description: Delete files from S3 Bucket.
+ *     summary: Delete a file in S3 bucket
+ *     description: Delete a file from Amazon S3 Bucket using its key.
  *     tags: [Upload]
  *     security:
  *       - bearerAuth: []
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               key:
- *                 type: string
- *             example:
- *               key: some_strange_key
+ *     parameters:
+ *       - in: query
+ *         name: key
+ *         schema:
+ *           type: string
+ *         description: File key
  *     responses:
  *       "200":
  *         description: No content
@@ -119,7 +116,7 @@ export default router;
  * /upload/r2:
  *   post:
  *     summary: Upload a file to CloudFlare R2
- *     description: Upload files to CloudFlare r2.
+ *     description: Upload files to CloudFlare R2, a storage service provided by CloudFlare.
  *     tags: [Upload]
  *     security:
  *       - bearerAuth: []
