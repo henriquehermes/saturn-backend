@@ -47,6 +47,17 @@ components:
         message:
           type: string
 
+    Upload:
+      type: object
+      properties:
+        url:
+          type: string
+        role:
+          type: string
+          enum: [USER, ADMIN]
+      example:
+        url: http://www.com
+
   responses:
     DuplicateEmail:
       description: Email already taken
