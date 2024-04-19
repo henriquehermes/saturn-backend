@@ -75,7 +75,7 @@ const uploadToR2 = catchAsync(async (req, res) => {
 
 const uploadToS3 = catchAsync(async (req, res) => {
   if (!req.file) {
-    return res.status(httpStatus.NOT_FOUND).send();
+    return res.status(httpStatus.BAD_REQUEST).send('File not found');
   }
 
   const key = randomUUID().concat('-').concat(req.file?.originalname);
@@ -98,7 +98,7 @@ const uploadToS3 = catchAsync(async (req, res) => {
       url: response.Location
     });
   } catch (error) {
-    return res.status(500).send('Error uploading file to S3');
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).send('Error uploading file to S3');
   }
 });
 
@@ -111,7 +111,7 @@ const deleteFromS3 = catchAsync(async (req, res) => {
 
     return res.status(httpStatus.OK).send();
   } catch (error) {
-    return res.status(500).send('Error deleting file from S3');
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).send('Error deleting file from S3');
   }
 });
 

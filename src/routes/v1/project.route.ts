@@ -5,6 +5,9 @@ import validate from '../../middlewares/validate';
 import { projectValidation } from '../../validations';
 
 const router = express.Router();
+
+router.route('/').get(auth(), projectController.getAll);
+
 router
   .route('/new')
   .post(auth(), validate(projectValidation.createProject), projectController.create);
