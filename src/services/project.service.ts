@@ -1,4 +1,4 @@
-import { Project, Stack, Status } from '@prisma/client';
+import { Project, Stack, Status, Timeline } from '@prisma/client';
 import httpStatus from 'http-status';
 import prisma from '../client';
 import ApiError from '../utils/ApiError';
@@ -123,7 +123,84 @@ const queryProjects = async <Key extends keyof Project>(
   return { projects: projects as Pick<Project, Key>[], pageSize, totalPages, page };
 };
 
+/**
+ * Query for stats dashboard
+ * @returns {Promise<QueryResult>}
+ */
+const queryStats = async (userId: string) => {
+  const totalInactive = await prisma.project.count({
+    where: {
+      status: {
+        equals: Status.INACTIVE
+      },
+      AND: { creatorId: userId }
+    }
+  });
+  const totalActive = await prisma.project.count({
+    where: {
+      status: {
+        equals: Status.IN_PROGRESS
+      },
+      AND: { creatorId: userId }
+    }
+  });
+
+  return { totalActive, totalInactive, total: totalActive + totalInactive };
+};
+
+/**
+ * Query project by name and creator
+ * @returns {Promise<QueryResult>}
+ */
+const queryProjectByName = async (creatorId: string, name: string): Promise<Project> => {
+  const project = await prisma.project.findFirst({
+    where: {
+      name,
+      AND: { creatorId }
+    },
+    include: {
+      stack: true,
+      brainstorms: true,
+      collaborators: true,
+      tasks: true,
+      timeline: {
+        include: {
+          user: {
+            select: {
+              name: true,
+              avatar: true
+            }
+          }
+        }
+      }
+    }
+  });
+
+  return project as Project;
+};
+
+const createTimelineItem = async (
+  userId: string,
+  projectId: string,
+  text: string,
+  image?: string
+): Promise<Timeline> => {
+  const timelineItem = await prisma.timeline.create({
+    data: {
+      text,
+      userId,
+      projectId,
+      image: image ?? undefined
+    }
+  });
+
+  return timelineItem as Timeline;
+};
+
 export default {
   createProject,
-  queryProjects
+  queryProjects,
+  queryStats,
+  queryProjectByName,
+  createTimelineItem
 };

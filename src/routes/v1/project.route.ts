@@ -6,7 +6,17 @@ import { projectValidation } from '../../validations';
 
 const router = express.Router();
 
-router.route('/').get(auth(), projectController.getAll);
+router.route('/').get(auth(), validate(projectValidation.getProjects), projectController.getAll);
+
+router
+  .route('/:name')
+  .get(auth(), validate(projectValidation.getProjectByName), projectController.getByName);
+
+router
+  .route('/:id/timeline')
+  .post(auth(), validate(projectValidation.postTimeline), projectController.postTimeline);
+
+router.route('/stats').get(auth(), projectController.getStats);
 
 router
   .route('/new')

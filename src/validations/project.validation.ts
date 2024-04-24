@@ -16,6 +16,37 @@ const createProject = {
   })
 };
 
+const getProjects = {
+  query: Joi.object().keys({
+    status: Joi.string(),
+    name: Joi.string(),
+    sortBy: Joi.string(),
+    search: Joi.string(),
+    searchKey: Joi.string(),
+    pageSize: Joi.number().integer(),
+    page: Joi.number().integer()
+  })
+};
+
+const getProjectByName = {
+  params: Joi.object().keys({
+    name: Joi.string().required()
+  })
+};
+
+const postTimeline = {
+  params: Joi.object().keys({
+    id: Joi.string().required()
+  }),
+  body: Joi.object().keys({
+    text: Joi.string().required(),
+    image: Joi.string()
+  })
+};
+
 export default {
-  createProject
+  createProject,
+  getProjects,
+  getProjectByName,
+  postTimeline
 };
