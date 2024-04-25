@@ -35,7 +35,7 @@ const getStats = catchAsync(async (req, res) => {
 
   const projects = await projectService.queryStats(user.id);
 
-  res.status(httpStatus.CREATED).send(projects);
+  res.status(httpStatus.OK).send(projects);
 });
 
 const getByName = catchAsync(async (req, res) => {
@@ -63,10 +63,21 @@ const postTimeline = catchAsync(async (req, res) => {
   res.status(httpStatus.CREATED).send(projects);
 });
 
+const removeItemTimeline = catchAsync(async (req, res) => {
+  const user = req.user as User;
+  const projectId = req.params['id'] as string;
+  const itemId = req.params['itemId'] as string;
+
+  await projectService.removeTimelineItem(user?.id, projectId, itemId);
+
+  res.status(httpStatus.NO_CONTENT).send();
+});
+
 export default {
   create,
   getAll,
   getStats,
   getByName,
-  postTimeline
+  postTimeline,
+  removeItemTimeline
 };

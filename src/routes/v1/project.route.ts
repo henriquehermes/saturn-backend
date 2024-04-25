@@ -8,6 +8,8 @@ const router = express.Router();
 
 router.route('/').get(auth(), validate(projectValidation.getProjects), projectController.getAll);
 
+router.route('/stats').get(auth(), projectController.getStats);
+
 router
   .route('/:name')
   .get(auth(), validate(projectValidation.getProjectByName), projectController.getByName);
@@ -16,7 +18,13 @@ router
   .route('/:id/timeline')
   .post(auth(), validate(projectValidation.postTimeline), projectController.postTimeline);
 
-router.route('/stats').get(auth(), projectController.getStats);
+router
+  .route('/:id/timeline/:itemId')
+  .delete(
+    auth(),
+    validate(projectValidation.deleteItemTimeline),
+    projectController.removeItemTimeline
+  );
 
 router
   .route('/new')

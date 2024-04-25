@@ -7,6 +7,7 @@ import multer from 'multer';
 import { randomUUID } from 'crypto';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { Upload } from '@aws-sdk/lib-storage';
+import uploadService from '../services/upload.service';
 
 const multerConfigBucket = multer({
   storage: multer.memoryStorage(),
@@ -94,6 +95,11 @@ const uploadToS3 = catchAsync(async (req, res) => {
 
   try {
     const response = await upload.done();
+
+    if (response.Location) {
+      await uploadService.createUploadRegistry(response.Location, key);
+    }
+
     return res.status(httpStatus.CREATED).send({
       url: response.Location
     });

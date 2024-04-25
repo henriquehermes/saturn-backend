@@ -111,6 +111,12 @@ model Timeline {
   updatedAt DateTime @updatedAt
 }
 
+model File {
+  id       String @id @default(uuid())
+  file_url String @unique
+  key      String @unique
+}
+
 enum Role {
   USER
   ADMIN

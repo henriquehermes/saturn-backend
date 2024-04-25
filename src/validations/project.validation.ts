@@ -40,7 +40,14 @@ const postTimeline = {
   }),
   body: Joi.object().keys({
     text: Joi.string().required(),
-    image: Joi.string()
+    image: Joi.string().allow(null)
+  })
+};
+
+const deleteItemTimeline = {
+  params: Joi.object().keys({
+    id: Joi.string().required(),
+    itemId: Joi.string().required()
   })
 };
 
@@ -48,5 +55,6 @@ export default {
   createProject,
   getProjects,
   getProjectByName,
-  postTimeline
+  postTimeline,
+  deleteItemTimeline
 };

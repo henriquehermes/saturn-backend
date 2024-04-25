@@ -106,7 +106,8 @@ const getUserById = async <Key extends keyof User>(
     'isEmailVerified',
     'createdAt',
     'updatedAt',
-    'github'
+    'github',
+    'avatar'
   ] as Key[]
 ): Promise<Pick<User, Key> | null> => {
   return prisma.user.findUnique({
@@ -150,7 +151,7 @@ const getUserByEmail = async <Key extends keyof User>(
 const updateUserById = async <Key extends keyof User>(
   userId: string,
   updateBody: Prisma.UserUpdateInput,
-  keys: Key[] = ['id', 'email', 'name', 'role'] as Key[]
+  keys: Key[] = ['id', 'email', 'name', 'role', 'avatar'] as Key[]
 ): Promise<Pick<User, Key> | null> => {
   const user = await getUserById(userId, ['id', 'email', 'name']);
   if (!user) {

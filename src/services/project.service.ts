@@ -2,6 +2,9 @@ import { Project, Stack, Status, Timeline } from '@prisma/client';
 import httpStatus from 'http-status';
 import prisma from '../client';
 import ApiError from '../utils/ApiError';
+import { DeleteObjectCommand } from '@aws-sdk/client-s3';
+import { s3 } from '../lib/cloud-bucket';
+import config from '../config/config';
 
 const validStatusValues = Object.values(Status);
 
@@ -164,6 +167,9 @@ const queryProjectByName = async (creatorId: string, name: string): Promise<Proj
       collaborators: true,
       tasks: true,
       timeline: {
+        orderBy: {
+          createdAt: 'desc'
+        },
         include: {
           user: {
             select: {
@@ -191,10 +197,48 @@ const createTimelineItem = async (
       userId,
       projectId,
       image: image ?? undefined
+    },
+    include: {
+      user: {
+        select: {
+          name: true,
+          avatar: true
+        }
+      }
     }
   });
 
   return timelineItem as Timeline;
+};
+
+const removeTimelineItem = async (
+  userId: string,
+  projectId: string,
+  itemId: string
+): Promise<unknown> => {
+  const deleted = await prisma.timeline.delete({
+    where: {
+      id: itemId,
+      AND: {
+        projectId,
+        userId
+      }
+    }
+  });
+
+  if (deleted.image) {
+    const fileKey = await prisma.file.delete({
+      where: {
+        file_url: deleted.image
+      }
+    });
+
+    const params = { Bucket: config.aws.bucket, Key: fileKey.key };
+    const deleteCommand = new DeleteObjectCommand(params);
+    await s3.send(deleteCommand);
+  }
+
+  return;
 };
 
 export default {
@@ -202,5 +246,6 @@ export default {
   queryProjects,
   queryStats,
   queryProjectByName,
-  createTimelineItem
+  createTimelineItem,
+  removeTimelineItem
 };
