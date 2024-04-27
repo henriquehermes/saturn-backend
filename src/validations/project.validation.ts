@@ -44,10 +44,31 @@ const postTimeline = {
   })
 };
 
-const deleteItemTimeline = {
+const postBrainstorm = {
+  params: Joi.object().keys({
+    id: Joi.string().required()
+  }),
+  body: Joi.object().keys({
+    text: Joi.string().required()
+  })
+};
+
+const deleteItem = {
   params: Joi.object().keys({
     id: Joi.string().required(),
     itemId: Joi.string().required()
+  })
+};
+
+const getBrainstorm = {
+  params: Joi.object().keys({
+    id: Joi.string().required()
+  })
+};
+
+const deleteProject = {
+  params: Joi.object().keys({
+    id: Joi.string().required()
   })
 };
 
@@ -56,5 +77,8 @@ export default {
   getProjects,
   getProjectByName,
   postTimeline,
-  deleteItemTimeline
+  deleteItem,
+  postBrainstorm,
+  getBrainstorm,
+  deleteProject
 };

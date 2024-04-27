@@ -73,11 +73,53 @@ const removeItemTimeline = catchAsync(async (req, res) => {
   res.status(httpStatus.NO_CONTENT).send();
 });
 
+const postBrainstorm = catchAsync(async (req, res) => {
+  const user = req.user as User;
+  const projectId = req.params['id'] as string;
+  const { text } = req.body;
+
+  const projects = await projectService.createBrainstormItem(user?.id, projectId, text);
+
+  res.status(httpStatus.CREATED).send(projects);
+});
+
+const removeItemBrainstorm = catchAsync(async (req, res) => {
+  const user = req.user as User;
+  const projectId = req.params['id'] as string;
+  const itemId = req.params['itemId'] as string;
+
+  await projectService.removeBrainstormItem(user?.id, projectId, itemId);
+
+  res.status(httpStatus.NO_CONTENT).send();
+});
+
+const getBrainstorms = catchAsync(async (req, res) => {
+  const user = req.user as User;
+  const projectId = req.params['id'] as string;
+
+  const brainstorms = await projectService.getBrainstorms(user?.id, projectId);
+
+  res.status(httpStatus.OK).send(brainstorms);
+});
+
+const deleteProject = catchAsync(async (req, res) => {
+  const user = req.user as User;
+  const projectId = req.params['id'] as string;
+
+  await projectService.deleteProject(user?.id, projectId);
+
+  res.status(httpStatus.NO_CONTENT).send();
+});
+
 export default {
   create,
   getAll,
   getStats,
   getByName,
   postTimeline,
-  removeItemTimeline
+  removeItemTimeline,
+  postBrainstorm,
+  removeItemBrainstorm,
+  getBrainstorms,
+  deleteProject
 };

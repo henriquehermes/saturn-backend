@@ -1,10 +1,9 @@
-import { Project, Stack, Status, Timeline } from '@prisma/client';
+import { BrainStorm, Project, Stack, Status, Timeline } from '@prisma/client';
 import httpStatus from 'http-status';
 import prisma from '../client';
 import ApiError from '../utils/ApiError';
-import { DeleteObjectCommand } from '@aws-sdk/client-s3';
-import { s3 } from '../lib/cloud-bucket';
-import config from '../config/config';
+import uploadService from './upload.service';
+import logger from '../config/logger';
 
 const validStatusValues = Object.values(Status);
 
@@ -163,9 +162,6 @@ const queryProjectByName = async (creatorId: string, name: string): Promise<Proj
     },
     include: {
       stack: true,
-      brainstorms: true,
-      collaborators: true,
-      tasks: true,
       timeline: {
         orderBy: {
           createdAt: 'desc'
@@ -227,18 +223,141 @@ const removeTimelineItem = async (
   });
 
   if (deleted.image) {
-    const fileKey = await prisma.file.delete({
-      where: {
-        file_url: deleted.image
-      }
-    });
-
-    const params = { Bucket: config.aws.bucket, Key: fileKey.key };
-    const deleteCommand = new DeleteObjectCommand(params);
-    await s3.send(deleteCommand);
+    uploadService.deleteRegistry(deleted.image);
   }
 
   return;
+};
+
+const createBrainstormItem = async (
+  userId: string,
+  projectId: string,
+  text: string
+): Promise<BrainStorm> => {
+  const brainstorm = await prisma.brainStorm.create({
+    data: {
+      text,
+      userId,
+      projectId
+    }
+  });
+
+  return brainstorm as BrainStorm;
+};
+
+const removeBrainstormItem = async (
+  userId: string,
+  projectId: string,
+  itemId: string
+): Promise<BrainStorm> => {
+  const deleted = await prisma.brainStorm.delete({
+    where: {
+      id: itemId,
+      AND: {
+        projectId,
+        userId
+      }
+    }
+  });
+
+  return deleted;
+};
+
+const getBrainstorms = async (userId: string, projectId: string): Promise<BrainStorm[]> => {
+  const brainstorms = await prisma.brainStorm.findMany({
+    where: {
+      userId,
+      projectId
+    },
+    orderBy: {
+      createdAt: 'desc'
+    }
+  });
+
+  return brainstorms;
+};
+
+const deleteProject = async (userId: string, projectId: string) => {
+  const existingProject = await prisma.project.findUnique({
+    where: { id: projectId }
+  });
+
+  if (!existingProject) {
+    throw new Error('Project not found');
+  }
+
+  if (existingProject.logo) {
+    logger.debug(`Project image found: ${existingProject.logo}`);
+    await uploadService.deleteRegistry(existingProject.logo);
+  }
+
+  if (existingProject.flow_diagram) {
+    logger.debug(`Project diagram found: ${existingProject.flow_diagram}`);
+    await uploadService.deleteRegistry(existingProject.flow_diagram);
+  }
+
+  await prisma.brainStorm.deleteMany({
+    where: {
+      projectId,
+      AND: {
+        userId
+      }
+    }
+  });
+  logger.debug('Project brainstorms deleted');
+
+  await prisma.task.deleteMany({
+    where: {
+      projectId,
+      AND: {
+        userId
+      }
+    }
+  });
+  logger.debug('Project tasks deleted');
+
+  const existingTimelines = await prisma.timeline.findMany({
+    where: { id: projectId }
+  });
+
+  existingTimelines.map(async (item) => {
+    if (item.image) {
+      logger.debug(`Project timeline image found: ${item.image}`);
+      await uploadService.deleteRegistry(item.image);
+    }
+  });
+
+  await prisma.timeline.deleteMany({
+    where: {
+      projectId,
+      AND: {
+        userId
+      }
+    }
+  });
+  logger.debug('Project timeline deleted');
+
+  await prisma.collaborator.deleteMany({
+    where: {
+      projectId,
+      AND: {
+        userId
+      }
+    }
+  });
+  logger.debug('Project collaborators deleted');
+
+  await prisma.project.delete({
+    where: {
+      id: projectId,
+      AND: {
+        creatorId: userId
+      }
+    }
+  });
+  logger.debug('Project successfully deleted');
+
+  return existingProject;
 };
 
 export default {
@@ -247,5 +366,9 @@ export default {
   queryStats,
   queryProjectByName,
   createTimelineItem,
-  removeTimelineItem
+  removeTimelineItem,
+  createBrainstormItem,
+  removeBrainstormItem,
+  getBrainstorms,
+  deleteProject
 };
