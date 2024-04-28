@@ -360,6 +360,70 @@ const deleteProject = async (userId: string, projectId: string) => {
   return existingProject;
 };
 
+const updateProject = async (
+  userId: string,
+  projectId: string,
+  body: {
+    name: string;
+    description: string;
+    status: Status;
+    design_url: string;
+    flow_diagram: string;
+    logo: string;
+    stack: Stack;
+  }
+): Promise<Project> => {
+  const existingProject = await prisma.project.findUnique({
+    where: { id: projectId }
+  });
+
+  if (!existingProject) {
+    throw new Error('Project not found');
+  }
+
+  if (existingProject.creatorId !== userId) {
+    throw new Error('User is not the creator of this project');
+  }
+
+  const projectStack = await prisma.stack.findUnique({
+    where: {
+      id: body.stack.id
+    }
+  });
+
+  if (!projectStack) {
+    throw new Error('Stack not found');
+  }
+
+  await prisma.stack.update({
+    where: {
+      id: body.stack.id
+    },
+    data: {
+      ...body.stack
+    }
+  });
+  logger.debug('Project stack updated');
+
+  const updatedProject = await prisma.project.update({
+    where: { id: projectId },
+    data: {
+      name: body.name,
+      description: body.description,
+      status: body.status,
+      design_url: body.design_url,
+      flow_diagram: body.flow_diagram,
+      logo: body.logo
+    },
+    include: {
+      stack: true
+    }
+  });
+  logger.debug('Project updated');
+
+  return updatedProject;
+};
+
 export default {
   createProject,
   queryProjects,
@@ -370,5 +434,6 @@ export default {
   createBrainstormItem,
   removeBrainstormItem,
   getBrainstorms,
-  deleteProject
+  deleteProject,
+  updateProject
 };

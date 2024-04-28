@@ -16,6 +16,7 @@ router
 
 router
   .route('/:id')
+  .patch(auth(), validate(projectValidation.updateProject), projectController.updateProject)
   .delete(auth(), validate(projectValidation.deleteProject), projectController.deleteProject);
 
 router

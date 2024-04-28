@@ -111,6 +111,23 @@ const deleteProject = catchAsync(async (req, res) => {
   res.status(httpStatus.NO_CONTENT).send();
 });
 
+const updateProject = catchAsync(async (req, res) => {
+  const user = req.user as User;
+  const projectId = req.params['id'] as string;
+  const { name, description, status, design_url, flow_diagram, logo, stack } = req.body;
+
+  const project = await projectService.updateProject(user?.id, projectId, {
+    name,
+    description,
+    status,
+    design_url,
+    flow_diagram,
+    logo,
+    stack
+  });
+
+  res.status(httpStatus.OK).send(project);
+});
 export default {
   create,
   getAll,
@@ -121,5 +138,6 @@ export default {
   postBrainstorm,
   removeItemBrainstorm,
   getBrainstorms,
-  deleteProject
+  deleteProject,
+  updateProject
 };

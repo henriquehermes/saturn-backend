@@ -72,6 +72,26 @@ const deleteProject = {
   })
 };
 
+const updateProject = {
+  params: Joi.object().keys({
+    id: Joi.string().required()
+  }),
+  body: Joi.object().keys({
+    name: Joi.string().required(),
+    description: Joi.string().required(),
+    status: Joi.string().required(),
+    design_url: Joi.string().allow(null),
+    flow_diagram: Joi.string().allow(null),
+    logo: Joi.string().allow(null),
+    stack: Joi.object().keys({
+      id: Joi.string().required(),
+      frontend: Joi.array().items(Joi.string()).required(),
+      backend: Joi.array().items(Joi.string()).required(),
+      misc: Joi.array().items(Joi.string()).required()
+    })
+  })
+};
+
 export default {
   createProject,
   getProjects,
@@ -80,5 +100,6 @@ export default {
   deleteItem,
   postBrainstorm,
   getBrainstorm,
-  deleteProject
+  deleteProject,
+  updateProject
 };
