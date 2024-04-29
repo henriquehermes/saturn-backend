@@ -28,7 +28,8 @@ const loginUserWithEmailAndPassword = async (
     'createdAt',
     'updatedAt',
     'github',
-    'avatar'
+    'avatar',
+    'favourites'
   ]);
   if (!user || !(await isPasswordMatch(password, user.password as string))) {
     throw new ApiError(httpStatus.UNAUTHORIZED, 'Incorrect email or password');

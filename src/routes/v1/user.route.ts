@@ -1,8 +1,8 @@
 import express from 'express';
 import auth from '../../middlewares/auth';
-import { userController } from '../../controllers';
+import { favouriteController, userController } from '../../controllers';
 import validate from '../../middlewares/validate';
-import { userValidation } from '../../validations';
+import { favouriteValidation, userValidation } from '../../validations';
 
 const router = express.Router();
 
@@ -11,6 +11,11 @@ router
   .get(auth(), userController.getUser)
   .patch(auth(), validate(userValidation.updateUser), userController.updateUser)
   .delete(auth(), userController.deleteUser);
+
+router
+  .route('/favourites')
+  .get(auth(), favouriteController.getFavourites)
+  .patch(auth(), validate(favouriteValidation.addFavourite), favouriteController.addFavourite);
 
 router
   .route('/github')

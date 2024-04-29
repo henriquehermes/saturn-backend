@@ -1,4 +1,4 @@
-import { BrainStorm, Project, Stack, Status, Timeline } from '@prisma/client';
+import { Brainstorm, Project, Stack, Status, Timeline } from '@prisma/client';
 import httpStatus from 'http-status';
 import prisma from '../client';
 import ApiError from '../utils/ApiError';
@@ -233,8 +233,8 @@ const createBrainstormItem = async (
   userId: string,
   projectId: string,
   text: string
-): Promise<BrainStorm> => {
-  const brainstorm = await prisma.brainStorm.create({
+): Promise<Brainstorm> => {
+  const brainstorm = await prisma.brainstorm.create({
     data: {
       text,
       userId,
@@ -242,15 +242,15 @@ const createBrainstormItem = async (
     }
   });
 
-  return brainstorm as BrainStorm;
+  return brainstorm as Brainstorm;
 };
 
 const removeBrainstormItem = async (
   userId: string,
   projectId: string,
   itemId: string
-): Promise<BrainStorm> => {
-  const deleted = await prisma.brainStorm.delete({
+): Promise<Brainstorm> => {
+  const deleted = await prisma.brainstorm.delete({
     where: {
       id: itemId,
       AND: {
@@ -263,8 +263,8 @@ const removeBrainstormItem = async (
   return deleted;
 };
 
-const getBrainstorms = async (userId: string, projectId: string): Promise<BrainStorm[]> => {
-  const brainstorms = await prisma.brainStorm.findMany({
+const getBrainstorms = async (userId: string, projectId: string): Promise<Brainstorm[]> => {
+  const brainstorms = await prisma.brainstorm.findMany({
     where: {
       userId,
       projectId
@@ -296,7 +296,7 @@ const deleteProject = async (userId: string, projectId: string) => {
     await uploadService.deleteRegistry(existingProject.flow_diagram);
   }
 
-  await prisma.brainStorm.deleteMany({
+  await prisma.brainstorm.deleteMany({
     where: {
       projectId,
       AND: {
@@ -356,6 +356,30 @@ const deleteProject = async (userId: string, projectId: string) => {
     }
   });
   logger.debug('Project successfully deleted');
+
+  const userFavouriteList = await prisma.user.findUnique({
+    where: {
+      id: userId
+    },
+    select: {
+      favourites: true
+    }
+  });
+
+  const isIncluded = userFavouriteList?.favourites.includes(existingProject.name);
+
+  if (isIncluded) {
+    const newList = userFavouriteList?.favourites.filter((fav) => fav !== existingProject.name);
+    await prisma.user.update({
+      where: {
+        id: userId
+      },
+      data: {
+        favourites: newList
+      }
+    });
+    logger.debug('Project shortcut successfully deleted');
+  }
 
   return existingProject;
 };
