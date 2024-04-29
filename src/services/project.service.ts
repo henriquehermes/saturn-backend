@@ -63,7 +63,7 @@ const createProject = async ({
  * @param {Object} options - Query options
  * @param {string} [options.sortBy] - Sort option in the format: sortField:(desc|asc)
  * @param {number} [options.limit] - Maximum number of results per page (default = 10)
- * @param {number} [options.page] - Current page (default = 1)
+ * @param {number} [options.page] - Current page (default = 0)
  * @returns {Promise<QueryResult>}
  */
 const queryProjects = async <Key extends keyof Project>(
@@ -93,6 +93,7 @@ const queryProjects = async <Key extends keyof Project>(
   pageSize: number;
   totalPages: number;
   page: number;
+  totalRows: number;
 }> => {
   if (options.search) {
     const searchWord = options.search.toLowerCase(); // Convert search word to lowercase for case-insensitive search
@@ -109,20 +110,29 @@ const queryProjects = async <Key extends keyof Project>(
     // Combine the search filter with the existing filter
     filter = { AND: [filter, searchFilter] };
   }
+
   const totalCount = await prisma.project.count({ where: filter });
-  const page = options.page ?? 1;
+  const page = options.page ?? 0;
   const pageSize = options.pageSize ?? 10;
   const sortBy = options.sortBy;
   const sortType = options.sortType ?? 'desc';
   const totalPages = Math.ceil(totalCount / pageSize);
+
   const projects = await prisma.project.findMany({
     where: filter,
     select: keys.reduce((obj, k) => ({ ...obj, [k]: true }), {}),
-    skip: (page - 1) * pageSize,
+    skip: page * pageSize,
     take: pageSize,
-    orderBy: sortBy ? { [sortBy]: sortType } : undefined
+    orderBy: sortBy ? { [sortBy]: sortType } : { name: 'asc' }
   });
-  return { projects: projects as Pick<Project, Key>[], pageSize, totalPages, page };
+
+  return {
+    projects: projects as Pick<Project, Key>[],
+    pageSize,
+    totalPages,
+    page,
+    totalRows: totalCount
+  };
 };
 
 /**

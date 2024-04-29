@@ -33,14 +33,14 @@ const createUser = async (
  * @param {Object} filter - Prisma filter
  * @param {Object} options - Query options
  * @param {string} [options.sortBy] - Sort option in the format: sortField:(desc|asc)
- * @param {number} [options.limit] - Maximum number of results per page (default = 10)
- * @param {number} [options.page] - Current page (default = 1)
+ * @param {number} [options.pageSize] - Maximum number of results per page (default = 10)
+ * @param {number} [options.page] - Current page (default = 0)
  * @returns {Promise<QueryResult>}
  */
 const queryUsers = async <Key extends keyof User>(
   filter: object,
   options: {
-    limit?: number;
+    pageSize?: number;
     page?: number;
     sortBy?: string;
     sortType?: 'asc' | 'desc';
@@ -59,7 +59,13 @@ const queryUsers = async <Key extends keyof User>(
     'Token',
     'github'
   ] as Key[]
-): Promise<Pick<User, Key>[]> => {
+): Promise<{
+  users: Pick<User, Key>[];
+  pageSize: number;
+  totalPages: number;
+  page: number;
+  totalRows: number;
+}> => {
   if (options.search) {
     const searchWord = options.search.toLowerCase(); // Convert search word to lowercase for case-insensitive search
     const searchFilter: { OR: { [key: string]: any }[] } = { OR: [] };
@@ -75,18 +81,21 @@ const queryUsers = async <Key extends keyof User>(
     // Combine the search filter with the existing filter
     filter = { AND: [filter, searchFilter] };
   }
-  const page = options.page ?? 1;
-  const limit = options.limit ?? 10;
+  const totalCount = await prisma.user.count({ where: filter });
+  const page = options.page ?? 0;
+  const pageSize = options.pageSize ?? 10;
   const sortBy = options.sortBy;
   const sortType = options.sortType ?? 'desc';
+  const totalPages = Math.ceil(totalCount / pageSize);
+
   const users = await prisma.user.findMany({
     where: filter,
     select: keys.reduce((obj, k) => ({ ...obj, [k]: true }), {}),
-    skip: (page - 1) * limit,
-    take: limit,
+    skip: page * pageSize,
+    take: pageSize,
     orderBy: sortBy ? { [sortBy]: sortType } : undefined
   });
-  return users as Pick<User, Key>[];
+  return { users: users as Pick<User, Key>[], pageSize, totalPages, page, totalRows: totalCount };
 };
 
 /**
