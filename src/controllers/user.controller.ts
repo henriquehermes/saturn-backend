@@ -32,18 +32,8 @@ const deleteUser = catchAsync(async (req, res) => {
   res.status(httpStatus.NO_CONTENT).send();
 });
 
-const linkGitHub = catchAsync(async (req, res) => {
-  const user = req.user as User;
-
-  await userService.linkGitHub(user.id, req.body.github);
-  res.status(httpStatus.OK).send({
-    github: req.body.github
-  });
-});
-
 export default {
   getUser,
   updateUser,
-  deleteUser,
-  linkGitHub
+  deleteUser
 };

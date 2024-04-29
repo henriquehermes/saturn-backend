@@ -6,21 +6,13 @@ const updateUser = {
     .keys({
       // email: Joi.string().email(),
       // password: Joi.string().custom(password),
-      name: Joi.string().required(),
-      avatar: Joi.string().allow(null)
+      name: Joi.string(),
+      avatar: Joi.string().allow(null),
+      github: Joi.string().allow(null)
     })
     .min(1)
 };
 
-const githubLink = {
-  body: Joi.object().keys({
-    github: Joi.string()
-      .regex(/^https:\/\/api\.github\.com\/users\/.+/)
-      .allow(null)
-  })
-};
-
 export default {
-  updateUser,
-  githubLink
+  updateUser
 };

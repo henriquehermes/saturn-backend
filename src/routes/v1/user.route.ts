@@ -17,10 +17,6 @@ router
   .get(auth(), favouriteController.getFavourites)
   .patch(auth(), validate(favouriteValidation.addFavourite), favouriteController.addFavourite);
 
-router
-  .route('/github')
-  .patch(auth(), validate(userValidation.githubLink), userController.linkGitHub);
-
 export default router;
 
 /**
@@ -112,32 +108,4 @@ export default router;
  *       "404":
  *         $ref: '#/components/responses/NotFound'
  *
- * /user/github:
- *   patch:
- *     summary: Update GitHub link
- *     description: User can link your github account.
- *     tags: [User]
- *     security:
- *       - bearerAuth: []
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               github:
- *                 type: string
- *                 description: github repository
- *             example:
- *               github: https://api.github.com/users/henriquehermes
- *     responses:
- *       "200":
- *         description: No content
- *       "401":
- *         $ref: '#/components/responses/Unauthorized'
- *       "403":
- *         $ref: '#/components/responses/Forbidden'
- *       "404":
- *         $ref: '#/components/responses/NotFound'
  */

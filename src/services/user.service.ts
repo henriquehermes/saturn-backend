@@ -152,7 +152,7 @@ const getUserByEmail = async <Key extends keyof User>(
 const updateUserById = async <Key extends keyof User>(
   userId: string,
   updateBody: Prisma.UserUpdateInput,
-  keys: Key[] = ['id', 'email', 'name', 'role', 'avatar'] as Key[]
+  keys: Key[] = ['id', 'email', 'name', 'role', 'avatar', 'github'] as Key[]
 ): Promise<Pick<User, Key> | null> => {
   const user = await getUserById(userId, ['id', 'email', 'name']);
   if (!user) {
@@ -183,27 +183,11 @@ const deleteUserById = async (userId: string): Promise<User> => {
   return user;
 };
 
-/**
- * Link github user
- * @param {ObjectId} userId
- * @param {string} github
- * @returns {Promise<User>}
- */
-const linkGitHub = async (userId: string, github: string): Promise<User> => {
-  return await prisma.user.update({
-    where: { id: userId },
-    data: {
-      github
-    }
-  });
-};
-
 export default {
   createUser,
   queryUsers,
   getUserById,
   getUserByEmail,
   updateUserById,
-  deleteUserById,
-  linkGitHub
+  deleteUserById
 };
