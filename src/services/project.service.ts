@@ -1,4 +1,13 @@
-import { Brainstorm, Project, Stack, Status, Timeline } from '@prisma/client';
+import {
+  Brainstorm,
+  Project,
+  Stack,
+  Status,
+  Task,
+  TaskColumnId,
+  TaskType,
+  Timeline
+} from '@prisma/client';
 import httpStatus from 'http-status';
 import prisma from '../client';
 import ApiError from '../utils/ApiError';
@@ -458,6 +467,70 @@ const updateProject = async (
   return updatedProject;
 };
 
+const createTask = async (
+  userId: string,
+  projectId: string,
+  data: { columnId: TaskColumnId; content: string; type: TaskType; title: string }
+): Promise<Task> => {
+  const task = await prisma.task.create({
+    data: {
+      columnId: data.columnId,
+      content: data.content,
+      type: data.type,
+      title: data.title,
+      userId,
+      projectId
+    }
+  });
+
+  return task as Task;
+};
+
+const getTasks = async (userId: string, projectId: string): Promise<Task[]> => {
+  const tasks = await prisma.task.findMany({
+    where: {
+      userId,
+      projectId
+    }
+  });
+
+  return tasks as Task[];
+};
+
+const updateTask = async (
+  userId: string,
+  projectId: string,
+  data: { id: string; columnId: TaskColumnId; content: string; type: TaskType; title: string }
+): Promise<Task> => {
+  const task = await prisma.task.update({
+    data: {
+      columnId: data.columnId,
+      content: data.content,
+      type: data.type,
+      title: data.title
+    },
+    where: {
+      id: data.id,
+      userId,
+      projectId
+    }
+  });
+
+  return task as Task;
+};
+
+const deleteTask = async (userId: string, projectId: string, taskId: string): Promise<void> => {
+  await prisma.task.delete({
+    where: {
+      id: taskId,
+      userId,
+      projectId
+    }
+  });
+
+  return;
+};
+
 export default {
   createProject,
   queryProjects,
@@ -469,5 +542,9 @@ export default {
   removeBrainstormItem,
   getBrainstorms,
   deleteProject,
-  updateProject
+  updateProject,
+  createTask,
+  getTasks,
+  updateTask,
+  deleteTask
 };

@@ -128,6 +128,58 @@ const updateProject = catchAsync(async (req, res) => {
 
   res.status(httpStatus.OK).send(project);
 });
+
+const createTask = catchAsync(async (req, res) => {
+  const user = req.user as User;
+  const projectId = req.params['id'] as string;
+  const { columnId, content, type, title } = req.body;
+
+  const tasks = await projectService.createTask(user?.id, projectId, {
+    columnId,
+    content,
+    type,
+    title
+  });
+
+  res.status(httpStatus.CREATED).send(tasks);
+});
+
+const getTasks = catchAsync(async (req, res) => {
+  const user = req.user as User;
+  const projectId = req.params['id'] as string;
+
+  const tasks = await projectService.getTasks(user?.id, projectId);
+
+  res.status(httpStatus.OK).send(tasks);
+});
+
+const updateTask = catchAsync(async (req, res) => {
+  const user = req.user as User;
+  const projectId = req.params['id'] as string;
+
+  const { id, columnId, content, title, type } = req.body;
+
+  const taskUpdated = await projectService.updateTask(user?.id, projectId, {
+    id,
+    columnId,
+    content,
+    title,
+    type
+  });
+
+  res.status(httpStatus.OK).send(taskUpdated);
+});
+
+const deleteTask = catchAsync(async (req, res) => {
+  const user = req.user as User;
+  const projectId = req.params['id'] as string;
+  const taskId = req.params['taskId'] as string;
+
+  await projectService.deleteTask(user?.id, projectId, taskId);
+
+  res.status(httpStatus.OK).send();
+});
+
 export default {
   create,
   getAll,
@@ -139,5 +191,9 @@ export default {
   removeItemBrainstorm,
   getBrainstorms,
   deleteProject,
-  updateProject
+  updateProject,
+  createTask,
+  getTasks,
+  updateTask,
+  deleteTask
 };

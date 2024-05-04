@@ -92,6 +92,44 @@ const updateProject = {
   })
 };
 
+const getTasks = {
+  params: Joi.object().keys({
+    id: Joi.string().required()
+  })
+};
+
+const createTask = {
+  params: Joi.object().keys({
+    id: Joi.string().required()
+  }),
+  body: Joi.object().keys({
+    columnId: Joi.string().required(),
+    content: Joi.string().required(),
+    type: Joi.string().required(),
+    title: Joi.string().required()
+  })
+};
+
+const updateTask = {
+  params: Joi.object().keys({
+    id: Joi.string().required()
+  }),
+  body: Joi.object().keys({
+    id: Joi.string().required(),
+    columnId: Joi.string().required(),
+    content: Joi.string().required(),
+    type: Joi.string().required(),
+    title: Joi.string().required()
+  })
+};
+
+const deleteTask = {
+  params: Joi.object().keys({
+    id: Joi.string().required(),
+    taskId: Joi.string().required()
+  })
+};
+
 export default {
   createProject,
   getProjects,
@@ -101,5 +139,9 @@ export default {
   postBrainstorm,
   getBrainstorm,
   deleteProject,
-  updateProject
+  updateProject,
+  getTasks,
+  createTask,
+  updateTask,
+  deleteTask
 };

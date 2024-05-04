@@ -37,6 +37,16 @@ router
   .delete(auth(), validate(projectValidation.deleteItem), projectController.removeItemBrainstorm);
 
 router
+  .route('/:id/task')
+  .get(auth(), validate(projectValidation.getTasks), projectController.getTasks)
+  .post(auth(), validate(projectValidation.createTask), projectController.createTask)
+  .patch(auth(), validate(projectValidation.updateTask), projectController.updateTask);
+
+router
+  .route('/:id/task/:taskId')
+  .delete(auth(), validate(projectValidation.deleteTask), projectController.deleteTask);
+
+router
   .route('/new')
   .post(auth(), validate(projectValidation.createProject), projectController.create);
 

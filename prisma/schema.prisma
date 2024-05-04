@@ -88,16 +88,17 @@ model Collaborator {
 }
 
 model Task {
-  id                 String   @id @default(uuid())
-  name               String
-  description        String?
-  progressPercentage Int
-  project            Project  @relation(fields: [projectId], references: [id])
-  projectId          String
-  user               User     @relation(fields: [userId], references: [id])
-  userId             String
-  createdAt          DateTime @default(now())
-  updatedAt          DateTime @updatedAt
+  id        String       @id @default(uuid())
+  title     String
+  content   String
+  type      TaskType
+  columnId  TaskColumnId
+  project   Project      @relation(fields: [projectId], references: [id])
+  projectId String
+  user      User         @relation(fields: [userId], references: [id])
+  userId    String
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
 }
 
 model Timeline {
@@ -136,4 +137,15 @@ enum Status {
   COMPLETED
   CANCELLED
   INACTIVE
+}
+
+enum TaskType {
+  FEATURE
+  BUG
+}
+
+enum TaskColumnId {
+  BACKLOG
+  IN_PROGRESS
+  DONE
 }
