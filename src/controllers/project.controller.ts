@@ -132,13 +132,14 @@ const updateProject = catchAsync(async (req, res) => {
 const createTask = catchAsync(async (req, res) => {
   const user = req.user as User;
   const projectId = req.params['id'] as string;
-  const { columnId, content, type, title } = req.body;
+  const { columnId, content, type, title, priority } = req.body;
 
   const tasks = await projectService.createTask(user?.id, projectId, {
     columnId,
     content,
     type,
-    title
+    title,
+    priority
   });
 
   res.status(httpStatus.CREATED).send(tasks);
@@ -157,14 +158,15 @@ const updateTask = catchAsync(async (req, res) => {
   const user = req.user as User;
   const projectId = req.params['id'] as string;
 
-  const { id, columnId, content, title, type } = req.body;
+  const { id, columnId, content, title, type, priority } = req.body;
 
   const taskUpdated = await projectService.updateTask(user?.id, projectId, {
     id,
     columnId,
     content,
     title,
-    type
+    type,
+    priority
   });
 
   res.status(httpStatus.OK).send(taskUpdated);

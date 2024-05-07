@@ -5,6 +5,7 @@ import {
   Status,
   Task,
   TaskColumnId,
+  TaskPriority,
   TaskType,
   Timeline
 } from '@prisma/client';
@@ -470,10 +471,30 @@ const updateProject = async (
 const createTask = async (
   userId: string,
   projectId: string,
-  data: { columnId: TaskColumnId; content: string; type: TaskType; title: string }
+  data: {
+    priority: TaskPriority;
+    columnId: TaskColumnId;
+    content: string;
+    type: TaskType;
+    title: string;
+  }
 ): Promise<Task> => {
+  const lastTask = await prisma.task.findFirst({
+    orderBy: { createdAt: 'desc' }
+  });
+
+  let taskId = 'TASK-1'; // default taskId
+
+  if (lastTask) {
+    const lastTaskId = lastTask.id.split('-')[1];
+    const newTaskIdNum = parseInt(lastTaskId) + 1;
+    taskId = `TASK-${newTaskIdNum}`;
+  }
+
   const task = await prisma.task.create({
     data: {
+      id: taskId,
+      priority: data.priority,
       columnId: data.columnId,
       content: data.content,
       type: data.type,
@@ -500,14 +521,22 @@ const getTasks = async (userId: string, projectId: string): Promise<Task[]> => {
 const updateTask = async (
   userId: string,
   projectId: string,
-  data: { id: string; columnId: TaskColumnId; content: string; type: TaskType; title: string }
+  data: {
+    id: string;
+    priority: TaskPriority;
+    columnId: TaskColumnId;
+    content: string;
+    type: TaskType;
+    title: string;
+  }
 ): Promise<Task> => {
   const task = await prisma.task.update({
     data: {
       columnId: data.columnId,
       content: data.content,
       type: data.type,
-      title: data.title
+      title: data.title,
+      priority: data.priority
     },
     where: {
       id: data.id,

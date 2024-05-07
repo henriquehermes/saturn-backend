@@ -11,19 +11,18 @@ datasource db {
 }
 
 model User {
-  id              String         @id @default(uuid())
-  email           String         @unique
+  id              String       @id @default(uuid())
+  email           String       @unique
   name            String
   password        String
   avatar          String?
-  role            Role           @default(USER)
-  isEmailVerified Boolean        @default(false)
-  createdAt       DateTime       @default(now())
-  updatedAt       DateTime       @updatedAt
+  role            Role         @default(USER)
+  isEmailVerified Boolean      @default(false)
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
   Token           Token[]
   github          String?
   Project         Project[]
-  Collaborator    Collaborator[]
   Timeline        Timeline[]
   Task            Task[]
   Brainstorm      Brainstorm[]
@@ -42,22 +41,21 @@ model Token {
 }
 
 model Project {
-  id            String         @id @default(uuid())
-  name          String         @unique
-  description   String
-  status        Status
-  design_url    String?
-  flow_diagram  String?
-  logo          String?
-  user          User           @relation(fields: [creatorId], references: [id])
-  creatorId     String
-  stack         Stack?         @relation(name: "ProjectToStack")
-  collaborators Collaborator[]
-  brainstorms   Brainstorm[]
-  tasks         Task[]
-  timeline      Timeline[]
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
+  id           String       @id @default(uuid())
+  name         String       @unique
+  description  String
+  status       Status
+  design_url   String?
+  flow_diagram String?
+  logo         String?
+  user         User         @relation(fields: [creatorId], references: [id])
+  creatorId    String
+  stack        Stack?       @relation(name: "ProjectToStack")
+  brainstorms  Brainstorm[]
+  tasks        Task[]
+  timeline     Timeline[]
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
 }
 
 model Stack {
@@ -79,20 +77,13 @@ model Brainstorm {
   createdAt DateTime @default(now())
 }
 
-model Collaborator {
-  id        String  @id @default(uuid())
-  user      User    @relation(fields: [userId], references: [id])
-  userId    String
-  project   Project @relation(fields: [projectId], references: [id])
-  projectId String
-}
-
 model Task {
-  id        String       @id @default(uuid())
+  id        String       @id
   title     String
   content   String
   type      TaskType
   columnId  TaskColumnId
+  priority  TaskPriority
   project   Project      @relation(fields: [projectId], references: [id])
   projectId String
   user      User         @relation(fields: [userId], references: [id])
@@ -142,10 +133,18 @@ enum Status {
 enum TaskType {
   FEATURE
   BUG
+  DOCUMENTATION
 }
 
 enum TaskColumnId {
-  BACKLOG
+  TODO
   IN_PROGRESS
   DONE
+  CANCELLED
+}
+
+enum TaskPriority {
+  HIGH
+  MEDIUM
+  LOW
 }

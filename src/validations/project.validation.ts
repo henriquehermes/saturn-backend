@@ -103,6 +103,7 @@ const createTask = {
     id: Joi.string().required()
   }),
   body: Joi.object().keys({
+    priority: Joi.string().required(),
     columnId: Joi.string().required(),
     content: Joi.string().required(),
     type: Joi.string().required(),
@@ -116,6 +117,7 @@ const updateTask = {
   }),
   body: Joi.object().keys({
     id: Joi.string().required(),
+    priority: Joi.string().required(),
     columnId: Joi.string().required(),
     content: Joi.string().required(),
     type: Joi.string().required(),
