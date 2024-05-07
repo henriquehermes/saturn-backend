@@ -1,8 +1,9 @@
 import express from 'express';
 import auth from '../../middlewares/auth';
-import { projectController } from '../../controllers';
+import { projectController, taskController, timelineController } from '../../controllers';
 import validate from '../../middlewares/validate';
 import { projectValidation } from '../../validations';
+import brainstormController from '../../controllers/brainstorm.controller';
 
 const router = express.Router();
 
@@ -21,30 +22,30 @@ router
 
 router
   .route('/:id/timeline')
-  .post(auth(), validate(projectValidation.postTimeline), projectController.postTimeline);
+  .post(auth(), validate(projectValidation.postTimeline), timelineController.postTimeline);
 
 router
   .route('/:id/timeline/:itemId')
-  .delete(auth(), validate(projectValidation.deleteItem), projectController.removeItemTimeline);
+  .delete(auth(), validate(projectValidation.deleteItem), timelineController.deleteTimeline);
 
 router
   .route('/:id/brainstorm')
-  .get(auth(), validate(projectValidation.getBrainstorm), projectController.getBrainstorms)
-  .post(auth(), validate(projectValidation.postBrainstorm), projectController.postBrainstorm);
+  .get(auth(), validate(projectValidation.getBrainstorm), brainstormController.getAll)
+  .post(auth(), validate(projectValidation.postBrainstorm), brainstormController.createBrainstorm);
 
 router
   .route('/:id/brainstorm/:itemId')
-  .delete(auth(), validate(projectValidation.deleteItem), projectController.removeItemBrainstorm);
+  .delete(auth(), validate(projectValidation.deleteItem), brainstormController.deleteBrainstorm);
 
 router
   .route('/:id/task')
-  .get(auth(), validate(projectValidation.getTasks), projectController.getTasks)
-  .post(auth(), validate(projectValidation.createTask), projectController.createTask)
-  .patch(auth(), validate(projectValidation.updateTask), projectController.updateTask);
+  .get(auth(), validate(projectValidation.getTasks), taskController.getTasks)
+  .post(auth(), validate(projectValidation.createTask), taskController.createTask)
+  .patch(auth(), validate(projectValidation.updateTask), taskController.updateTask);
 
 router
   .route('/:id/task/:taskId')
-  .delete(auth(), validate(projectValidation.deleteTask), projectController.deleteTask);
+  .delete(auth(), validate(projectValidation.deleteTask), taskController.deleteTask);
 
 router
   .route('/new')

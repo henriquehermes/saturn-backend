@@ -4,3 +4,6 @@ export { default as adminController } from './admin.controller';
 export { default as aiController } from './ai.controller';
 export { default as projectController } from './project.controller';
 export { default as favouriteController } from './favourite.controller';
+export { default as timelineController } from './timeline.controller';
+export { default as brainstormController } from './brainstorm.controller';
+export { default as taskController } from './task.controller';

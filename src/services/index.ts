@@ -4,3 +4,6 @@ export { default as tokenService } from './token.service';
 export { default as emailService } from './email.service';
 export { default as projectService } from './project.service';
 export { default as favouriteService } from './favourite.service';
+export { default as timelineService } from './timeline.service';
+export { default as brainstormService } from './brainstorm.service';
+export { default as taskService } from './task.service';

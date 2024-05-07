@@ -1,14 +1,4 @@
-import {
-  Brainstorm,
-  Project,
-  Stack,
-  Status,
-  Task,
-  TaskColumnId,
-  TaskPriority,
-  TaskType,
-  Timeline
-} from '@prisma/client';
+import { Project, Stack, Status } from '@prisma/client';
 import httpStatus from 'http-status';
 import prisma from '../client';
 import ApiError from '../utils/ApiError';
@@ -201,102 +191,6 @@ const queryProjectByName = async (creatorId: string, name: string): Promise<Proj
   return project as Project;
 };
 
-const createTimelineItem = async (
-  userId: string,
-  projectId: string,
-  text: string,
-  image?: string
-): Promise<Timeline> => {
-  const timelineItem = await prisma.timeline.create({
-    data: {
-      text,
-      userId,
-      projectId,
-      image: image ?? undefined
-    },
-    include: {
-      user: {
-        select: {
-          name: true,
-          avatar: true
-        }
-      }
-    }
-  });
-
-  return timelineItem as Timeline;
-};
-
-const removeTimelineItem = async (
-  userId: string,
-  projectId: string,
-  itemId: string
-): Promise<unknown> => {
-  const deleted = await prisma.timeline.delete({
-    where: {
-      id: itemId,
-      AND: {
-        projectId,
-        userId
-      }
-    }
-  });
-
-  if (deleted.image) {
-    uploadService.deleteRegistry(deleted.image);
-  }
-
-  return;
-};
-
-const createBrainstormItem = async (
-  userId: string,
-  projectId: string,
-  text: string
-): Promise<Brainstorm> => {
-  const brainstorm = await prisma.brainstorm.create({
-    data: {
-      text,
-      userId,
-      projectId
-    }
-  });
-
-  return brainstorm as Brainstorm;
-};
-
-const removeBrainstormItem = async (
-  userId: string,
-  projectId: string,
-  itemId: string
-): Promise<Brainstorm> => {
-  const deleted = await prisma.brainstorm.delete({
-    where: {
-      id: itemId,
-      AND: {
-        projectId,
-        userId
-      }
-    }
-  });
-
-  return deleted;
-};
-
-const getBrainstorms = async (userId: string, projectId: string): Promise<Brainstorm[]> => {
-  const brainstorms = await prisma.brainstorm.findMany({
-    where: {
-      userId,
-      projectId
-    },
-    orderBy: {
-      createdAt: 'desc'
-    }
-  });
-
-  return brainstorms;
-};
-
 const deleteProject = async (userId: string, projectId: string) => {
   const existingProject = await prisma.project.findUnique({
     where: { id: projectId }
@@ -468,112 +362,11 @@ const updateProject = async (
   return updatedProject;
 };
 
-const createTask = async (
-  userId: string,
-  projectId: string,
-  data: {
-    priority: TaskPriority;
-    columnId: TaskColumnId;
-    content: string;
-    type: TaskType;
-    title: string;
-  }
-): Promise<Task> => {
-  const lastTask = await prisma.task.findFirst({
-    orderBy: { createdAt: 'desc' }
-  });
-
-  let taskId = 'TASK-1'; // default taskId
-
-  if (lastTask) {
-    const lastTaskId = lastTask.id.split('-')[1];
-    const newTaskIdNum = parseInt(lastTaskId) + 1;
-    taskId = `TASK-${newTaskIdNum}`;
-  }
-
-  const task = await prisma.task.create({
-    data: {
-      id: taskId,
-      priority: data.priority,
-      columnId: data.columnId,
-      content: data.content,
-      type: data.type,
-      title: data.title,
-      userId,
-      projectId
-    }
-  });
-
-  return task as Task;
-};
-
-const getTasks = async (userId: string, projectId: string): Promise<Task[]> => {
-  const tasks = await prisma.task.findMany({
-    where: {
-      userId,
-      projectId
-    }
-  });
-
-  return tasks as Task[];
-};
-
-const updateTask = async (
-  userId: string,
-  projectId: string,
-  data: {
-    id: string;
-    priority: TaskPriority;
-    columnId: TaskColumnId;
-    content: string;
-    type: TaskType;
-    title: string;
-  }
-): Promise<Task> => {
-  const task = await prisma.task.update({
-    data: {
-      columnId: data.columnId,
-      content: data.content,
-      type: data.type,
-      title: data.title,
-      priority: data.priority
-    },
-    where: {
-      id: data.id,
-      userId,
-      projectId
-    }
-  });
-
-  return task as Task;
-};
-
-const deleteTask = async (userId: string, projectId: string, taskId: string): Promise<void> => {
-  await prisma.task.delete({
-    where: {
-      id: taskId,
-      userId,
-      projectId
-    }
-  });
-
-  return;
-};
-
 export default {
   createProject,
   queryProjects,
   queryStats,
   queryProjectByName,
-  createTimelineItem,
-  removeTimelineItem,
-  createBrainstormItem,
-  removeBrainstormItem,
-  getBrainstorms,
   deleteProject,
-  updateProject,
-  createTask,
-  getTasks,
-  updateTask,
-  deleteTask
+  updateProject
 };
