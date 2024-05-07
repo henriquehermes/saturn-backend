@@ -1,19 +1,30 @@
 import Joi from 'joi';
 
-const createProject = {
-  body: Joi.object().keys({
-    name: Joi.string().required(),
-    description: Joi.string().required(),
-    status: Joi.string().required(),
-    design_url: Joi.string(),
-    flow_diagram: Joi.string(),
-    logo: Joi.string(),
-    stack: Joi.object().keys({
-      frontend: Joi.array().items(Joi.string()).required(),
-      backend: Joi.array().items(Joi.string()).required(),
-      misc: Joi.array().items(Joi.string()).required()
-    })
+const commonProjectFields = {
+  name: Joi.string().required(),
+  description: Joi.string().required(),
+  status: Joi.string().required(),
+  design_url: Joi.string().allow(null),
+  flow_diagram: Joi.string().allow(null),
+  logo: Joi.string().allow(null),
+  stack: Joi.object().keys({
+    frontend: Joi.array().items(Joi.string()).required(),
+    backend: Joi.array().items(Joi.string()).required(),
+    misc: Joi.array().items(Joi.string()).required()
   })
+};
+
+const projectIdSchema = Joi.object().keys({
+  id: Joi.string().required()
+});
+
+const createProject = {
+  body: Joi.object().keys(commonProjectFields)
+};
+
+const updateProject = {
+  params: projectIdSchema,
+  body: Joi.object().keys(commonProjectFields)
 };
 
 const getProjects = {
@@ -35,9 +46,7 @@ const getProjectByName = {
 };
 
 const postTimeline = {
-  params: Joi.object().keys({
-    id: Joi.string().required()
-  }),
+  params: projectIdSchema,
   body: Joi.object().keys({
     text: Joi.string().required(),
     image: Joi.string().allow(null)
@@ -45,9 +54,7 @@ const postTimeline = {
 };
 
 const postBrainstorm = {
-  params: Joi.object().keys({
-    id: Joi.string().required()
-  }),
+  params: projectIdSchema,
   body: Joi.object().keys({
     text: Joi.string().required()
   })
@@ -55,53 +62,25 @@ const postBrainstorm = {
 
 const deleteItem = {
   params: Joi.object().keys({
-    id: Joi.string().required(),
+    ...projectIdSchema,
     itemId: Joi.string().required()
   })
 };
 
 const getBrainstorm = {
-  params: Joi.object().keys({
-    id: Joi.string().required()
-  })
+  params: projectIdSchema
 };
 
 const deleteProject = {
-  params: Joi.object().keys({
-    id: Joi.string().required()
-  })
-};
-
-const updateProject = {
-  params: Joi.object().keys({
-    id: Joi.string().required()
-  }),
-  body: Joi.object().keys({
-    name: Joi.string().required(),
-    description: Joi.string().required(),
-    status: Joi.string().required(),
-    design_url: Joi.string().allow(null),
-    flow_diagram: Joi.string().allow(null),
-    logo: Joi.string().allow(null),
-    stack: Joi.object().keys({
-      id: Joi.string().required(),
-      frontend: Joi.array().items(Joi.string()).required(),
-      backend: Joi.array().items(Joi.string()).required(),
-      misc: Joi.array().items(Joi.string()).required()
-    })
-  })
+  params: projectIdSchema
 };
 
 const getTasks = {
-  params: Joi.object().keys({
-    id: Joi.string().required()
-  })
+  params: projectIdSchema
 };
 
 const createTask = {
-  params: Joi.object().keys({
-    id: Joi.string().required()
-  }),
+  params: projectIdSchema,
   body: Joi.object().keys({
     priority: Joi.string().required(),
     columnId: Joi.string().required(),
@@ -113,10 +92,11 @@ const createTask = {
 
 const updateTask = {
   params: Joi.object().keys({
+    ...projectIdSchema,
     id: Joi.string().required()
   }),
   body: Joi.object().keys({
-    id: Joi.string().required(),
+    ...projectIdSchema,
     priority: Joi.string().required(),
     columnId: Joi.string().required(),
     content: Joi.string().required(),
@@ -127,7 +107,7 @@ const updateTask = {
 
 const deleteTask = {
   params: Joi.object().keys({
-    id: Joi.string().required(),
+    ...projectIdSchema,
     taskId: Joi.string().required()
   })
 };

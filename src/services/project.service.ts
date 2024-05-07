@@ -162,6 +162,8 @@ const queryStats = async (userId: string) => {
 
 /**
  * Query project by name and creator
+ * @param {string} creatorId
+ * @param {string} name
  * @returns {Promise<QueryResult>}
  */
 const queryProjectByName = async (creatorId: string, name: string): Promise<Project> => {
@@ -191,6 +193,12 @@ const queryProjectByName = async (creatorId: string, name: string): Promise<Proj
   return project as Project;
 };
 
+/**
+ * Delete project
+ * @param {string} userId
+ * @param {string} projectId
+ * @returns {Promise<QueryResult>}
+ */
 const deleteProject = async (userId: string, projectId: string) => {
   const existingProject = await prisma.project.findUnique({
     where: { id: projectId }
@@ -213,9 +221,7 @@ const deleteProject = async (userId: string, projectId: string) => {
   await prisma.brainstorm.deleteMany({
     where: {
       projectId,
-      AND: {
-        userId
-      }
+      userId
     }
   });
   logger.debug('Project brainstorms deleted');
@@ -223,9 +229,7 @@ const deleteProject = async (userId: string, projectId: string) => {
   await prisma.task.deleteMany({
     where: {
       projectId,
-      AND: {
-        userId
-      }
+      userId
     }
   });
   logger.debug('Project tasks deleted');
@@ -234,19 +238,19 @@ const deleteProject = async (userId: string, projectId: string) => {
     where: { id: projectId }
   });
 
-  existingTimelines.map(async (item) => {
-    if (item.image) {
-      logger.debug(`Project timeline image found: ${item.image}`);
-      await uploadService.deleteRegistry(item.image);
-    }
-  });
+  await Promise.all(
+    existingTimelines.map(async (item) => {
+      if (item.image) {
+        logger.debug(`Project timeline image found: ${item.image}`);
+        await uploadService.deleteRegistry(item.image);
+      }
+    })
+  );
 
   await prisma.timeline.deleteMany({
     where: {
       projectId,
-      AND: {
-        userId
-      }
+      userId
     }
   });
   logger.debug('Project timeline deleted');
@@ -254,9 +258,7 @@ const deleteProject = async (userId: string, projectId: string) => {
   await prisma.collaborator.deleteMany({
     where: {
       projectId,
-      AND: {
-        userId
-      }
+      userId
     }
   });
   logger.debug('Project collaborators deleted');
@@ -264,9 +266,7 @@ const deleteProject = async (userId: string, projectId: string) => {
   await prisma.project.delete({
     where: {
       id: projectId,
-      AND: {
-        creatorId: userId
-      }
+      creatorId: userId
     }
   });
   logger.debug('Project successfully deleted');
@@ -280,10 +280,11 @@ const deleteProject = async (userId: string, projectId: string) => {
     }
   });
 
-  const isIncluded = userFavouriteList?.favourites.includes(existingProject.name);
+  const isIncluded =
+    userFavouriteList?.favourites && userFavouriteList.favourites.includes(existingProject.name);
 
   if (isIncluded) {
-    const newList = userFavouriteList?.favourites.filter((fav) => fav !== existingProject.name);
+    const newList = userFavouriteList.favourites.filter((fav) => fav !== existingProject.name);
     await prisma.user.update({
       where: {
         id: userId
@@ -298,6 +299,20 @@ const deleteProject = async (userId: string, projectId: string) => {
   return existingProject;
 };
 
+/**
+ * Update a project
+ * @param {string} userId
+ * @param {string} projectId
+ * @param {Object} body - Object containing updated project details
+ * @param {string} body.name - New name of the project
+ * @param {string} body.description - New description of the project
+ * @param {Status} body.status - New status of the project
+ * @param {string} body.design_url - New URL for the project design
+ * @param {string} body.flow_diagram - New URL for the project flow diagram
+ * @param {string} body.logo - New URL for the project logo
+ * @param {Stack} body.stack - New stack for the project
+ * @returns {Promise<Project>}
+ */
 const updateProject = async (
   userId: string,
   projectId: string,

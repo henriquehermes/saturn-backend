@@ -6,7 +6,7 @@ const addFavourite = catchAsync(async (req, res) => {
   const user = req.user as User;
   const favouriteList = req.body['favourites'];
 
-  const updatedFavourites = await favouriteService.addFavourite(user.id, favouriteList);
+  const updatedFavourites = await favouriteService.updateFavourites(user.id, favouriteList);
 
   res.send(updatedFavourites);
 });

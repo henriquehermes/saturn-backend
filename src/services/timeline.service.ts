@@ -2,6 +2,14 @@ import { Timeline } from '@prisma/client';
 import prisma from '../client';
 import uploadService from './upload.service';
 
+/**
+ * Create a new timeline item
+ * @param {string} userId - User ID
+ * @param {string} projectId - Project ID
+ * @param {string} text - Text content of the timeline item
+ * @param {string} [image] - Optional image URL for the timeline item
+ * @returns {Promise<Timeline>} - Created timeline item
+ */
 const createTimeline = async (
   userId: string,
   projectId: string,
@@ -13,7 +21,7 @@ const createTimeline = async (
       text,
       userId,
       projectId,
-      image: image ?? undefined
+      image: image || undefined
     },
     include: {
       user: {
@@ -25,9 +33,16 @@ const createTimeline = async (
     }
   });
 
-  return timelineItem as Timeline;
+  return timelineItem;
 };
 
+/**
+ * Delete a timeline item
+ * @param {string} userId - User ID
+ * @param {string} projectId - Project ID
+ * @param {string} itemId - ID of the timeline item to delete
+ * @returns {Promise<unknown>}
+ */
 const deleteTimeline = async (
   userId: string,
   projectId: string,
@@ -36,13 +51,12 @@ const deleteTimeline = async (
   const deleted = await prisma.timeline.delete({
     where: {
       id: itemId,
-      AND: {
-        projectId,
-        userId
-      }
+      projectId,
+      userId
     }
   });
 
+  // Delete the associated image if it exists
   if (deleted.image) {
     uploadService.deleteRegistry(deleted.image);
   }

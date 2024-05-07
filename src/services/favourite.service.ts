@@ -1,12 +1,12 @@
 import prisma from '../client';
 
 /**
- * Add favourite project to the navbar
+ * Update user's favourite projects
  * @param {string} userId
- * @param {favourites[]} projectNames
- * @returns {Promise<string[]>}
+ * @param {string[]} favourites
+ * @returns {Promise<{ name: string; logo: string | null }[]>}
  */
-const addFavourite = async (
+const updateFavourites = async (
   userId: string,
   favourites: string[]
 ): Promise<{ name: string; logo: string | null }[]> => {
@@ -25,28 +25,13 @@ const addFavourite = async (
     select: { favourites: true }
   });
 
-  const projects = await prisma.project.findMany({
-    where: {
-      name: {
-        in: favourites
-      }
-    },
-    select: {
-      name: true,
-      logo: true
-    }
-  });
-
-  return projects.map((project) => ({
-    name: project.name,
-    logo: project.logo
-  }));
+  return getFavourites(userId);
 };
 
 /**
- * Get favourite list from user
+ * Fetch user's favourite projects
  * @param {string} userId
- * @returns {Promise<string[]>}
+ * @returns {Promise<{ name: string; logo: string | null }[]>}
  */
 const getFavourites = async (userId: string): Promise<{ name: string; logo: string | null }[]> => {
   const user = await prisma.user.findUnique({
@@ -77,6 +62,6 @@ const getFavourites = async (userId: string): Promise<{ name: string; logo: stri
 };
 
 export default {
-  addFavourite,
+  updateFavourites,
   getFavourites
 };
