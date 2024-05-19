@@ -2,6 +2,7 @@ import { User } from '@prisma/client';
 import httpStatus from 'http-status';
 import { taskService } from '../services';
 import catchAsync from '../utils/catchAsync';
+import pick from '../utils/pick';
 
 const createTask = catchAsync(async (req, res) => {
   const user = req.user as User;
@@ -22,8 +23,13 @@ const createTask = catchAsync(async (req, res) => {
 const getAll = catchAsync(async (req, res) => {
   const user = req.user as User;
   const projectId = req.params['id'] as string;
+  const filter = {
+    projectId,
+    userId: user.id
+  };
+  const options = pick(req.query, ['sortBy', 'pageSize', 'page', 'sortType']);
 
-  const tasks = await taskService.getAll(user?.id, projectId);
+  const tasks = await taskService.getAll(filter, options);
 
   res.status(httpStatus.OK).send(tasks);
 });

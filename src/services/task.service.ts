@@ -29,7 +29,7 @@ const createTask = async (
     orderBy: { createdAt: 'desc' }
   });
 
-  const lastTaskId = lastTask ? parseInt(lastTask.id.split('-')[1]) : 0;
+  const lastTaskId = lastTask ? parseInt(lastTask.taskId.split('-')[1]) : 0;
   const taskId = `TASK-${lastTaskId + 1}`;
 
   const task = await prisma.task.create({
@@ -51,15 +51,63 @@ const createTask = async (
 /**
  * Get all tasks for a user in a project
  * @param {string} userId - User ID
- * @param {string} projectId - Project ID
+ * @param {Object} query - Prisma filter
+ * @param {Object} options - Query options
+ * @param {string} [options.sortBy] - Sort option in the format: sortField:(desc|asc)
+ * @param {number} [options.limit] - Maximum number of results per page (default = 10)
+ * @param {number} [options.page] - Current page (default = 0)
  * @returns {Promise<Task[]>} - Array of tasks
  */
-const getAll = async (userId: string, projectId: string): Promise<Task[]> => {
+const getAll = async <Key extends keyof Task>(
+  filter: object,
+  options: {
+    pageSize?: number;
+    page?: number;
+    sortBy?: string;
+    sortType?: 'asc' | 'desc';
+  },
+  keys: Key[] = [
+    'id',
+    'content',
+    'columnId',
+    'createdAt',
+    'priority',
+    'projectId',
+    'taskId',
+    'title',
+    'type',
+    'updatedAt',
+    'userId'
+  ] as Key[]
+): Promise<{
+  tasks: Pick<Task, Key>[];
+  pageSize: number;
+  totalPages: number;
+  page: number;
+  totalRows: number;
+}> => {
+  const totalCount = await prisma.task.count({ where: filter });
+  const page = options.page ?? 0;
+  const pageSize = options.pageSize ?? 10;
+  const sortBy = options.sortBy;
+  const sortType = options.sortType ?? 'desc';
+  const totalPages = Math.ceil(totalCount / pageSize);
+
   const tasks = await prisma.task.findMany({
-    where: { userId, projectId }
+    where: filter,
+    select: keys.reduce((obj, k) => ({ ...obj, [k]: true }), {}),
+    skip: page * pageSize,
+    take: pageSize,
+    orderBy: sortBy ? { [sortBy]: sortType } : { taskId: 'asc' }
   });
 
-  return tasks;
+  return {
+    tasks: tasks as Pick<Task, Key>[],
+    pageSize,
+    totalPages,
+    page,
+    totalRows: totalCount
+  };
 };
 
 /**
