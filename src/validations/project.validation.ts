@@ -62,7 +62,7 @@ const postBrainstorm = {
 
 const deleteItem = {
   params: Joi.object().keys({
-    ...projectIdSchema,
+    id: Joi.string().required(),
     itemId: Joi.string().required()
   })
 };
@@ -92,11 +92,10 @@ const createTask = {
 
 const updateTask = {
   params: Joi.object().keys({
-    ...projectIdSchema,
     id: Joi.string().required()
   }),
   body: Joi.object().keys({
-    ...projectIdSchema,
+    id: Joi.string().required(),
     priority: Joi.string().required(),
     columnId: Joi.string().required(),
     content: Joi.string().required(),
@@ -107,7 +106,7 @@ const updateTask = {
 
 const deleteTask = {
   params: Joi.object().keys({
-    ...projectIdSchema,
+    id: Joi.string().required(),
     taskId: Joi.string().required()
   })
 };

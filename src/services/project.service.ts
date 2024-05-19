@@ -255,14 +255,6 @@ const deleteProject = async (userId: string, projectId: string) => {
   });
   logger.debug('Project timeline deleted');
 
-  await prisma.collaborator.deleteMany({
-    where: {
-      projectId,
-      userId
-    }
-  });
-  logger.debug('Project collaborators deleted');
-
   await prisma.project.delete({
     where: {
       id: projectId,

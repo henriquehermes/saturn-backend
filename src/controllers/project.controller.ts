@@ -27,7 +27,7 @@ const getAll = catchAsync(async (req, res) => {
 
   const projects = await projectService.queryProjects(filter, options, searchFields);
 
-  res.status(httpStatus.CREATED).send(projects);
+  res.status(httpStatus.OK).send(projects);
 });
 
 const getStats = catchAsync(async (req, res) => {
@@ -45,7 +45,7 @@ const getByName = catchAsync(async (req, res) => {
 
   const projects = await projectService.queryProjectByName(user?.id, decodeURI(name));
 
-  res.status(httpStatus.CREATED).send(projects);
+  res.status(httpStatus.OK).send(projects);
 });
 
 const deleteProject = catchAsync(async (req, res) => {
