@@ -78,7 +78,8 @@ model Brainstorm {
 }
 
 model Task {
-  id        String       @id
+  id        String       @id @default(uuid())
+  taskId    String
   title     String
   content   String
   type      TaskType

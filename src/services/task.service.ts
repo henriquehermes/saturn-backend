@@ -34,7 +34,7 @@ const createTask = async (
 
   const task = await prisma.task.create({
     data: {
-      id: taskId,
+      taskId,
       priority: data.priority,
       columnId: data.columnId,
       content: data.content,
