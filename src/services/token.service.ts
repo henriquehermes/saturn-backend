@@ -47,7 +47,7 @@ const saveToken = async (
   type: TokenType,
   blacklisted = false
 ): Promise<Token> => {
-  const createdToken = prisma.token.create({
+  const createdToken = await prisma.token.create({
     data: {
       token,
       userId,

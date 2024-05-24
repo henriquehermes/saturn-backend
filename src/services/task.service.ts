@@ -24,13 +24,12 @@ const createTask = async (
     title: string;
   }
 ): Promise<Task> => {
-  const lastTask = await prisma.task.findFirst({
+  const totalTasks = await prisma.task.count({
     where: { userId, projectId },
     orderBy: { createdAt: 'desc' }
   });
 
-  const lastTaskId = lastTask ? parseInt(lastTask.taskId.split('-')[1]) : 0;
-  const taskId = `TASK-${lastTaskId + 1}`;
+  const taskId = totalTasks + 1;
 
   const task = await prisma.task.create({
     data: {
@@ -90,22 +89,22 @@ const getAll = async <Key extends keyof Task>(
   const page = options.page ?? 0;
   const pageSize = options.pageSize ?? 10;
   const sortBy = options.sortBy;
-  const sortType = options.sortType ?? 'desc';
+  const sortType = options.sortType ?? 'asc';
   const totalPages = Math.ceil(totalCount / pageSize);
 
   const tasks = await prisma.task.findMany({
     where: filter,
     select: keys.reduce((obj, k) => ({ ...obj, [k]: true }), {}),
-    skip: page * pageSize,
-    take: pageSize,
+    skip: +page * +pageSize,
+    take: +pageSize,
     orderBy: sortBy ? { [sortBy]: sortType } : { taskId: 'asc' }
   });
 
   return {
     tasks: tasks as Pick<Task, Key>[],
-    pageSize,
+    pageSize: +pageSize,
     totalPages,
-    page,
+    page: +page,
     totalRows: totalCount
   };
 };

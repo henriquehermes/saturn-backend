@@ -18,7 +18,7 @@ const createUser = async (
   if (await getUserByEmail(email)) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Email already taken');
   }
-  return prisma.user.create({
+  return await prisma.user.create({
     data: {
       email,
       name,
