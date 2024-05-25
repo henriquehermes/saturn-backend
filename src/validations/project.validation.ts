@@ -24,7 +24,15 @@ const createProject = {
 
 const updateProject = {
   params: projectIdSchema,
-  body: Joi.object().keys(commonProjectFields)
+  body: Joi.object().keys({
+    ...commonProjectFields,
+    stack: Joi.object().keys({
+      id: Joi.string().required(),
+      frontend: Joi.array().items(Joi.string()).required(),
+      backend: Joi.array().items(Joi.string()).required(),
+      misc: Joi.array().items(Joi.string()).required()
+    })
+  })
 };
 
 const getProjects = {

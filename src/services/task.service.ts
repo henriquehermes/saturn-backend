@@ -159,8 +159,8 @@ const updateTask = async (
  * @param {string} taskId - ID of the task to delete
  * @returns {Promise<void>}
  */
-const deleteTask = async (userId: string, projectId: string, taskId: string): Promise<void> => {
-  await prisma.task.delete({
+const deleteTask = async (userId: string, projectId: string, taskId: string): Promise<Task> => {
+  return await prisma.task.delete({
     where: {
       id: taskId,
       userId,

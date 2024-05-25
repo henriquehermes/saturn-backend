@@ -57,9 +57,9 @@ const deleteTask = catchAsync(async (req, res) => {
   const projectId = req.params['id'] as string;
   const taskId = req.params['taskId'] as string;
 
-  await taskService.deleteTask(user?.id, projectId, taskId);
+  const deleted = await taskService.deleteTask(user?.id, projectId, taskId);
 
-  res.status(httpStatus.OK).send();
+  res.status(httpStatus.OK).send(deleted);
 });
 
 export default {
