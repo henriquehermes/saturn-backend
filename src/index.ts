@@ -15,7 +15,7 @@ prisma.$connect().then(() => {
 const exitHandler = () => {
   if (server) {
     server.close(() => {
-      logsger.info('Server closed');
+      logger.info('Server closed');
       process.exit(1);
     });
   } else {
